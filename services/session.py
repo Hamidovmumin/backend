@@ -9,6 +9,7 @@ from serializers.addons import Token
 from datetime import datetime, timedelta, timezone
 from rest_framework.request import Request
 from rest_framework.exceptions import Throttled
+from utils.ip_address import get_ip
 
 
 class SessionService:
@@ -19,7 +20,7 @@ class SessionService:
             rate_limit_minutes: int,
             max_attempts:int
     ):
-        ip_address = request.META.get('REMOTE_ADDR')
+        ip_address = get_ip(request)
         recent_count = crud.count_recent_by_ip(ip_address=ip_address,rate_limit_minutes = rate_limit_minutes)
 
         if recent_count >= max_attempts:
