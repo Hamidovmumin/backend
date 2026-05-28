@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="az">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hesab aktivləşdirmə - Novelora</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --ink: #24180a;
+      --muted: rgba(36, 24, 10, .58);
+      --gold: #c89a37;
+      --teal: #1aa89a;
+      --coral: #d96a52;
+      --amber: #d38b24;
+      --card: rgba(255, 251, 244, .78);
+      --border: rgba(216, 173, 86, .24);
+      --serif: 'Playfair Display', Georgia, serif;
+      --sans: 'DM Sans', system-ui, sans-serif;
+    }
+
+    html, body {
+      min-height: 100%;
+    }
+
+    body {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 28px 16px;
+      overflow: hidden;
+      color: var(--ink);
+      font-family: var(--sans);
+      background: #f7edd8;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle 360px at 16% 18%, rgba(216, 173, 86, .28), transparent 70%),
+        radial-gradient(circle 300px at 88% 78%, rgba(26, 168, 154, .18), transparent 68%),
+        radial-gradient(circle 240px at 72% 12%, rgba(217, 106, 82, .14), transparent 64%),
+        linear-gradient(180deg, #fbf1df 0%, #f1e7d4 100%);
+      z-index: 0;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(rgba(160, 120, 40, .08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(160, 120, 40, .08) 1px, transparent 1px);
+      background-size: 72px 72px;
+      mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, #000 35%, transparent 82%);
+      z-index: 0;
+    }
+
+    .shell {
+      width: min(440px, 100%);
+      position: relative;
+      z-index: 1;
+    }
+
+    .brand {
+      text-align: center;
+      margin-bottom: 18px;
+    }
+
+    .logo-mark {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 10px;
+      border-radius: 13px;
+      border: 1px solid rgba(216, 173, 86, .35);
+      background: rgba(216, 173, 86, .12);
+      color: var(--gold);
+      font-size: 21px;
+      box-shadow: 0 0 0 6px rgba(216, 173, 86, .06), 0 10px 28px rgba(120, 90, 20, .16);
+    }
+
+    .brand-name {
+      font-family: var(--serif);
+      font-size: 2rem;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .card {
+      overflow: hidden;
+      text-align: center;
+      padding: 34px 30px 30px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: var(--card);
+      box-shadow: 0 24px 70px rgba(120, 80, 20, .16), inset 0 1px 0 rgba(255, 255, 255, .88);
+      backdrop-filter: blur(22px) saturate(1.25);
+    }
+
+    .state {
+      display: none;
+    }
+
+    .state.show {
+      display: block;
+    }
+
+    .icon {
+      width: 66px;
+      height: 66px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 18px;
+      border-radius: 50%;
+      font-size: 30px;
+    }
+
+    .success .icon {
+      color: var(--teal);
+      background: rgba(26, 168, 154, .14);
+      box-shadow: inset 0 0 0 1px rgba(26, 168, 154, .22);
+    }
+
+    .error .icon {
+      color: var(--coral);
+      background: rgba(217, 106, 82, .14);
+      box-shadow: inset 0 0 0 1px rgba(217, 106, 82, .22);
+    }
+
+    .expired .icon {
+      color: var(--amber);
+      background: rgba(211, 139, 36, .14);
+      box-shadow: inset 0 0 0 1px rgba(211, 139, 36, .22);
+    }
+
+    .eyebrow {
+      color: var(--gold);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      font-family: var(--serif);
+      font-size: 2rem;
+      font-weight: 900;
+      line-height: 1.08;
+      margin-bottom: 12px;
+    }
+
+    p {
+      max-width: 330px;
+      margin: 0 auto;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .primary-btn {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: none;
+      border-radius: 999px;
+      color: #120b03;
+      background: linear-gradient(135deg, #c89632 0%, #d8ad56 50%, #c48224 100%);
+      box-shadow: 0 10px 26px rgba(180, 130, 30, .22), inset 0 1px 0 rgba(255, 255, 255, .25);
+      font-size: 14px;
+      font-weight: 800;
+      text-decoration: none;
+      transition: .18s;
+    }
+
+    .primary-btn:hover {
+      transform: translateY(-1px);
+      background: linear-gradient(135deg, #d8ad56 0%, #edd294 50%, #cc9420 100%);
+    }
+
+    .hint {
+      margin-top: 18px;
+      color: rgba(36, 24, 10, .42);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 20px 12px;
+      }
+
+      .card {
+        padding: 30px 22px 24px;
+      }
+
+      h1 {
+        font-size: 1.7rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="shell">
+    <div class="brand">
+      <div class="logo-mark"><i class="bi bi-book-half"></i></div>
+      <div class="brand-name">Novelora</div>
+    </div>
+
+    <section class="card">
+
+      <div class="state error" id="errorState">
+        <div class="icon"><i class="bi bi-exclamation-triangle"></i></div>
+        <div class="eyebrow">Xəta baş verdi</div>
+        <h1>Link düzgün deyil</h1>
+        <p id="errorMessage">Aktivləşdirmə linki etibarsızdır və ya artıq istifadə olunub.</p>
+
+        <div class="actions">
+          <a class="primary-btn" href="{% url 'login' %}">
+            Giriş səhifəsinə qayıt <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="state expired" id="expiredState">
+        <div class="icon"><i class="bi bi-clock-history"></i></div>
+        <div class="eyebrow">Vaxt bitib</div>
+        <h1>Sessiya müddəti bitmişdir</h1>
+        <p>Bu aktivləşdirmə linkinin istifadə müddəti başa çatıb. Zəhmət olmasa yeni aktivləşdirmə linkindən istifadə edin.</p>
+
+        <div class="actions">
+          <a class="primary-btn" href="{% url 'login' %}">
+            Giriş səhifəsinə qayıt <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+
+        <div class="hint" id="timeMessage"></div>
+      </div>
+
+      <div class="state success" id="successState">
+        <div class="icon"><i class="bi bi-check2-circle"></i></div>
+        <div class="eyebrow">Aktivləşdirildi</div>
+        <h1>Hesabınız uğurla aktivləşdirildi</h1>
+        <p id="successMessage">Artıq Novelora hesabınıza daxil olub kitab dünyanızı davam etdirə bilərsiniz.</p>
+
+        <div class="actions">
+          <a class="primary-btn" href="{% url 'login' %}">
+            Hesabınıza daxil olun <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+<script>
+  const states = {
+    error: document.getElementById('errorState'),
+    expired: document.getElementById('expiredState'),
+    success: document.getElementById('successState')
+  };
+
+  const errorMessage = document.getElementById('errorMessage');
+  const timeMessage = document.getElementById('timeMessage');
+  const successMessage = document.getElementById('successMessage');
+
+  function showState(name) {
+    Object.values(states).forEach((state) => {
+      state.classList.remove('show');
+    });
+
+    states[name].classList.add('show');
+  }
+
+  function getMessage(value) {
+    if (Array.isArray(value)) {
+      return value.join(' ');
+    }
+
+    return value || '';
+  }
+
+  async function activateAccount() {
+    const params = new URLSearchParams(window.location.search);
+    const payload = params.get('payload');
+
+    if (!payload) {
+      errorMessage.textContent = 'Payload is required';
+      showState('error');
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/accounts/activate/?payload=${encodeURIComponent(payload)}`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
+
+
+
+      const data = await response.json();
+
+      if (data.time) {
+        timeMessage.textContent = getMessage(data.time);
+        showState('expired');
+        return;
+      }
+
+      if (data.error) {
+        errorMessage.textContent = getMessage(data.error);
+        showState('error');
+        return;
+      }
+
+      if (data.sacsessful) {
+        successMessage.textContent = getMessage(data.sacsessful);
+        showState('success');
+        return;
+      }
+
+      errorMessage.textContent = 'Gözlənilməyən cavab alındı.';
+      showState('error');
+    } catch (error) {
+      errorMessage.textContent = 'Aktivləşdirmə zamanı xəta baş verdi.';
+      showState('error');
+    }
+  }
+
+  activateAccount();
+</script>
+</body>
+</html>

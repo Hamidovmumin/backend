@@ -1,0 +1,32 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+
+        <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+    </head>
+
+    <body>
+
+        <!-- CURSOR -->
+        <div id="cursor"></div>
+        <div id="cursor-ring"></div>
+
+        {% include 'includes/header.html' %}
+
+        <main>
+            {% block content %}
+
+            {% endblock %}
+        </main>
+
+        {% include 'includes/footer.html' %}
+
+        <script src="{% static 'js/script.js' %}"></script>
+    </body>
+</html>

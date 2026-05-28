@@ -1,0 +1,786 @@
+<!doctype html>
+<html lang="az">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Giriş — Novelora</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f5f0e8;
+      --surface: #ffffff;
+      --surface2: #f0ebe0;
+      --border: rgba(22,18,10,.1);
+      --border-hover: rgba(22,18,10,.2);
+      --ink: #1a1510;
+      --ink-muted: rgba(22,18,10,.5);
+      --gold: #a07828;
+      --teal: #0f7a72;
+      --coral: #c84a38;
+      --serif: 'Playfair Display', Georgia, serif;
+      --sans: 'DM Sans', system-ui, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #f7edd8;
+      color: var(--ink);
+      font-family: var(--sans);
+      display: grid;
+      place-items: center;
+      padding: 32px 20px;
+      overflow: hidden;
+    }
+
+    canvas#bg {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse at center, rgba(255,250,240,0) 0%, rgba(170,120,40,.2) 100%);
+    }
+
+    .login-shell {
+      width: min(460px, 100%);
+      position: relative;
+      z-index: 1;
+    }
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .logo-mark {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      border: 1px solid rgba(160,120,40,.35);
+      background: rgba(160,120,40,.08);
+      display: grid;
+      place-items: center;
+      color: var(--gold);
+      font-size: 21px;
+      margin-bottom: 10px;
+    }
+
+    .brand-name {
+      font-family: var(--serif);
+      font-size: 2rem;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .brand-sub {
+      color: var(--ink-muted);
+      font-size: 13px;
+      font-weight: 500;
+      margin-top: 5px;
+    }
+
+    .login-card {
+      overflow: hidden;
+      background: rgba(255,255,255,.84);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: 0 30px 80px rgba(22,18,10,.14);
+      backdrop-filter: blur(18px);
+    }
+
+    .slider {
+      display: flex;
+      width: 400%;
+      transform: translateX(0);
+      transition: transform .42s cubic-bezier(.22,.8,.24,1);
+    }
+
+    .login-card[data-step="1"] .slider { transform: translateX(-25%); }
+    .login-card[data-step="2"] .slider { transform: translateX(-50%); }
+    .login-card[data-step="3"] .slider { transform: translateX(-75%); }
+
+    .panel {
+      width: 25%;
+      min-height: 392px;
+      padding: 34px 34px 30px;
+    }
+
+    .panel-head {
+      margin-bottom: 24px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--gold);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .eyebrow::before {
+      content: '';
+      width: 20px;
+      height: 1px;
+      background: var(--gold);
+      display: block;
+    }
+
+    .panel-title {
+      font-family: var(--serif);
+      font-size: 1.75rem;
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+
+    .panel-text {
+      color: var(--ink-muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .field label {
+      display: block;
+      color: var(--ink-muted);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      margin-bottom: 7px;
+    }
+
+    .field-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 48px;
+      padding: 0 14px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      transition: border-color .16s, background .16s;
+    }
+
+    .field-wrap:focus-within {
+      border-color: var(--gold);
+      background: #fff;
+    }
+
+    .field-wrap i {
+      color: var(--gold);
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .field-wrap input {
+      width: 100%;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 15px;
+    }
+
+    .primary-btn,
+    .method-btn,
+    .ghost-btn {
+      width: 100%;
+      min-height: 48px;
+      border-radius: 999px;
+      font-family: var(--sans);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: .18s;
+    }
+
+    .primary-btn {
+      border: none;
+      background: var(--ink);
+      color: #f5f0e8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .primary-btn:hover { background: var(--gold); color: #fff; }
+
+    .method-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .method-btn {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      padding: 12px 16px;
+      text-align: left;
+      border-radius: 14px;
+      min-height: 64px;
+    }
+
+    .method-btn:hover {
+      border-color: var(--gold);
+      transform: translateY(-1px);
+      box-shadow: 0 14px 32px rgba(22,18,10,.08);
+    }
+
+    .method-icon {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: rgba(160,120,40,.1);
+      color: var(--gold);
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .method-main {
+      display: block;
+      font-size: 14px;
+      line-height: 1.25;
+    }
+
+    .method-sub {
+      display: block;
+      color: var(--ink-muted);
+      font-size: 12px;
+      font-weight: 500;
+      margin-top: 2px;
+    }
+
+    .code-row {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 9px;
+      margin: 26px 0 22px;
+    }
+
+    .code-input {
+      width: 100%;
+      aspect-ratio: 1;
+      border: 1px solid var(--border-hover);
+      border-radius: 10px;
+      background: var(--surface2);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 1.35rem;
+      font-weight: 700;
+      text-align: center;
+      outline: none;
+      transition: border-color .16s, background .16s, transform .16s;
+    }
+
+    .code-input:focus {
+      border-color: var(--gold);
+      background: #fff;
+      transform: translateY(-1px);
+    }
+
+    .panel-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .ghost-btn {
+      border: 1px solid var(--border-hover);
+      background: transparent;
+      color: var(--ink-muted);
+    }
+
+    .ghost-btn:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    .status {
+      min-height: 18px;
+      color: var(--coral);
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 12px;
+      text-align: center;
+    }
+
+    @media (max-width: 480px) {
+      .panel { padding: 28px 22px 24px; }
+      .code-row { gap: 7px; }
+      .panel-title { font-size: 1.5rem; }
+    }
+
+      /* ── CUSTOM CURSOR ─── */
+    #cursor {
+      width: 10px; height: 10px;
+      background: var(--coral);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      transition: transform .15s ease;
+      transform: translate(-50%,-50%);
+    }
+    #cursor-ring {
+      width: 36px; height: 36px;
+      border: 1.5px solid var(--coral);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9998;
+      transition: transform .35s ease, width .25s, height .25s, opacity .25s;
+      transform: translate(-50%,-50%);
+      opacity: .55;
+    }
+    body:hover #cursor { opacity: 1; }
+  </style>
+</head>
+<body>
+
+    <!-- CURSOR -->
+        <div id="cursor"></div>
+        <div id="cursor-ring"></div>
+
+  <canvas id="bg"></canvas>
+
+  <main class="login-shell">
+    <div class="brand">
+      <div class="logo-mark"><i class="bi bi-book-half"></i></div>
+      <div class="brand-name">Novelora</div>
+      <div class="brand-sub">Hesabınıza təhlükəsiz giriş</div>
+    </div>
+
+    <section class="login-card" id="loginCard" data-step="0">
+      <div class="slider">
+        <div class="panel">
+          <div class="panel-head">
+            <div class="eyebrow">Giriş</div>
+            <h1 class="panel-title">Hesab məlumatları</h1>
+            <p class="panel-text">Username və password daxil edin, sonra təsdiq üsulunu seçin.</p>
+          </div>
+
+          <div class="field-group">
+            <div class="field">
+              <label for="username">Username</label>
+              <div class="field-wrap">
+                <i class="bi bi-person"></i>
+                <input id="username" type="text" autocomplete="username" placeholder="məsələn: leyla@novelora.az">
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="password">Password</label>
+              <div class="field-wrap">
+                <i class="bi bi-lock"></i>
+                <input id="password" type="password" autocomplete="current-password" placeholder="Şifrənizi daxil edin">
+              </div>
+            </div>
+          </div>
+
+          <button class="primary-btn" type="button" onclick="goToMethods()">
+            Next <i class="bi bi-arrow-right"></i>
+          </button>
+          <div class="status" id="loginStatus"></div>
+            <a href="{% url 'registration' %}">Registration</a>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <div class="eyebrow">Təsdiq</div>
+            <h2 class="panel-title">Təsdiq üsulunu seçin</h2>
+            <p class="panel-text">Email kodu və ya TOTP tətbiqi ilə davam edə bilərsiniz.</p>
+          </div>
+
+          <div class="method-list">
+            <button class="method-btn" type="button" onclick="selectMethod('email')">
+              <span class="method-icon"><i class="bi bi-envelope"></i></span>
+              <span>
+                <span class="method-main" id="emailMethodText">email@example.com</span>
+                <span class="method-sub">Emailə gələn 6 rəqəmli kodla təsdiq et</span>
+              </span>
+            </button>
+
+            <button class="method-btn" type="button" onclick="selectMethod('totp')">
+              <span class="method-icon"><i class="bi bi-shield-lock"></i></span>
+              <span>
+                <span class="method-main">TOTP kodu ilə təsdiq elə</span>
+                <span class="method-sub">Authenticator tətbiqindəki 6 rəqəmli kod</span>
+              </span>
+            </button>
+          </div>
+
+          <div class="panel-actions" style="margin-top:18px;">
+            <button class="ghost-btn" type="button" onclick="setStep(0)">Geri qayıt</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <div class="eyebrow">Email kodu</div>
+            <h2 class="panel-title">6 rəqəmli kod</h2>
+            <p class="panel-text"><span id="emailTarget">email@example.com</span> ünvanına gələn təsdiq kodunu daxil edin.</p>
+          </div>
+
+          <div class="code-row" data-code-group="email">
+            <input class="code-input" inputmode="numeric" maxlength="1">
+            <input class="code-input" inputmode="numeric" maxlength="1">
+            <input class="code-input" inputmode="numeric" maxlength="1">
+            <input class="code-input" inputmode="numeric" maxlength="1">
+            <input class="code-input" inputmode="numeric" maxlength="1">
+            <input class="code-input" inputmode="numeric" maxlength="1">
+          </div>
+
+          <div class="panel-actions">
+            <button class="primary-btn" type="button" onclick="verifyCode('email')">
+              Təsdiq et <i class="bi bi-check2"></i>
+            </button>
+            <button class="ghost-btn" type="button" onclick="setStep(1)">Geri qayıt</button>
+          </div>
+          <div class="status" id="emailStatus"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <div class="eyebrow">TOTP kodu</div>
+            <h2 class="panel-title">Authenticator kodu</h2>
+            <p class="panel-text">TOTP tətbiqində görünən 6 rəqəmli təsdiq kodunu daxil edin.</p>
+          </div>
+
+          <div class="code-row" data-code-group="totp">
+            <input class="code-input" inputmode="numeric" maxlength="1">
+            <input class="code-input" inputmode="numeric" maxlength="1">
+            <input class="code-input" inputmode="numeric" maxlength="1">
+            <input class="code-input" inputmode="numeric" maxlength="1">
+            <input class="code-input" inputmode="numeric" maxlength="1">
+            <input class="code-input" inputmode="numeric" maxlength="1">
+          </div>
+
+          <div class="panel-actions">
+            <button class="primary-btn" type="button" onclick="verifyCode('totp')">
+              Təsdiq et <i class="bi bi-check2"></i>
+            </button>
+            <button class="ghost-btn" type="button" onclick="setStep(1)">Geri qayıt</button>
+          </div>
+          <div class="status" id="totpStatus"></div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <script>
+      /* Custom cursor */
+const cur = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cur.style.left = mx+'px'; cur.style.top = my+'px'; });
+(function animRing() {
+rx += (mx - rx) * .14; ry += (my - ry) * .14;
+ring.style.left = rx+'px'; ring.style.top = ry+'px';
+requestAnimationFrame(animRing);
+})();
+document.querySelectorAll('a,button,.cat-item,.book-card,.news-card').forEach(el => {
+el.addEventListener('mouseenter', () => { ring.style.width='56px'; ring.style.height='56px'; ring.style.opacity='1'; cur.style.transform='translate(-50%,-50%) scale(1.6)'; });
+el.addEventListener('mouseleave', () => { ring.style.width='36px'; ring.style.height='36px'; ring.style.opacity='.55'; cur.style.transform='translate(-50%,-50%) scale(1)'; });
+});
+
+    const canvas = document.getElementById('bg');
+    const ctx = canvas.getContext('2d');
+    let W;
+    let H;
+    let particles;
+    let orbs;
+    let startTime = null;
+
+    function resizeCanvas() {
+      W = canvas.width = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
+
+    function makeOrbs() {
+      return [
+        { x: W * 0.14, y: H * 0.20, r: 380, hue: 38, sat: 92, lig: 68, speed: 0.00042, phase: 0 },
+        { x: W * 0.84, y: H * 0.76, r: 340, hue: 170, sat: 62, lig: 58, speed: 0.00034, phase: 1.2 },
+        { x: W * 0.70, y: H * 0.12, r: 260, hue: 18, sat: 86, lig: 64, speed: 0.00048, phase: 2.4 },
+        { x: W * 0.26, y: H * 0.88, r: 300, hue: 46, sat: 86, lig: 66, speed: 0.00038, phase: 0.8 }
+      ];
+    }
+
+    function makeParticles() {
+      const arr = [];
+      for (let i = 0; i < 90; i++) {
+        arr.push({
+          x: Math.random() * W,
+          y: Math.random() * H,
+          r: Math.random() * 2.8 + 0.8,
+          vx: (Math.random() - 0.5) * 0.55,
+          vy: -(Math.random() * 0.55 + 0.18),
+          alpha: Math.random() * 0.42 + 0.16,
+          hue: 34 + Math.random() * 28
+        });
+      }
+      return arr;
+    }
+
+    function drawWaves(t) {
+      for (let layer = 0; layer < 6; layer++) {
+        ctx.beginPath();
+        const yBase = H * (0.30 + layer * 0.095);
+        const amp = 26 + layer * 8;
+        const freq = 0.007 - layer * 0.00045;
+        const speed = t * (0.00055 + layer * 0.00011);
+        ctx.moveTo(0, yBase);
+
+        for (let x = 0; x <= W; x += 4) {
+          const y =
+            yBase +
+            Math.sin(x * freq + speed) * amp +
+            Math.cos(x * freq * 0.65 - speed * 0.9) * (amp * 0.42);
+          ctx.lineTo(x, y);
+        }
+
+        ctx.strokeStyle = `rgba(148,95,12,${0.075 - layer * 0.007})`;
+        ctx.lineWidth = layer === 0 ? 1.6 : 1.15;
+        ctx.stroke();
+      }
+    }
+
+    function drawDots(t) {
+      const gap = 64;
+      const pulse = (Math.sin(t * 0.0018) + 1) * 0.035;
+      const cx = W / 2;
+      const cy = H / 2;
+
+      for (let x = gap / 2; x < W; x += gap) {
+        for (let y = gap / 2; y < H; y += gap) {
+          const dist = Math.hypot(x - cx, y - cy);
+          const maxDist = Math.hypot(cx, cy);
+          const alpha = Math.max(0, 1 - dist / maxDist) * 0.18 + pulse;
+          ctx.beginPath();
+          ctx.arc(x, y, 1.45, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(150,95,10,${alpha})`;
+          ctx.fill();
+        }
+      }
+    }
+
+    function drawBooks(t) {
+      const books = [
+        { x: W * 0.09, y: H * 0.72, w: 120, h: 168, rot: -0.16 },
+        { x: W * 0.84, y: H * 0.17, w: 92, h: 132, rot: 0.18 },
+        { x: W * 0.76, y: H * 0.66, w: 74, h: 108, rot: -0.08 }
+      ];
+
+      books.forEach((book, index) => {
+        const bob = Math.sin(t * 0.001 + index) * 8;
+        ctx.save();
+        ctx.translate(book.x, book.y + bob);
+        ctx.rotate(book.rot);
+        ctx.fillStyle = 'rgba(255,250,238,.26)';
+        ctx.strokeStyle = 'rgba(150,95,10,.22)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.roundRect(-book.w / 2, -book.h / 2, book.w, book.h, 12);
+        ctx.fill();
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(-book.w / 2 + 20, -book.h / 2);
+        ctx.lineTo(-book.w / 2 + 20, book.h / 2);
+        ctx.strokeStyle = 'rgba(150,95,10,.28)';
+        ctx.stroke();
+        ctx.restore();
+      });
+    }
+
+    function draw(ts) {
+      if (!startTime) startTime = ts;
+      const t = ts - startTime;
+
+      ctx.fillStyle = '#f7edd8';
+      ctx.fillRect(0, 0, W, H);
+
+      orbs.forEach(orb => {
+        const angle = t * orb.speed + orb.phase;
+        const ox = orb.x + Math.cos(angle) * (W * 0.095);
+        const oy = orb.y + Math.sin(angle * 1.25) * (H * 0.085);
+        const grad = ctx.createRadialGradient(ox, oy, 0, ox, oy, orb.r);
+        grad.addColorStop(0, `hsla(${orb.hue},${orb.sat}%,${orb.lig}%,0.52)`);
+        grad.addColorStop(0.45, `hsla(${orb.hue},${orb.sat}%,${orb.lig}%,0.22)`);
+        grad.addColorStop(1, `hsla(${orb.hue},${orb.sat}%,${orb.lig}%,0)`);
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.ellipse(ox, oy, orb.r, orb.r * 0.72, angle * 0.35, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      drawDots(t);
+      drawWaves(t);
+      drawBooks(t);
+
+      particles.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.y < -8) { p.y = H + 8; p.x = Math.random() * W; }
+        if (p.x < -8) p.x = W + 8;
+        if (p.x > W + 8) p.x = -8;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(${p.hue},78%,48%,${p.alpha})`;
+        ctx.fill();
+      });
+
+      requestAnimationFrame(draw);
+    }
+
+    function initCanvas() {
+      resizeCanvas();
+      orbs = makeOrbs();
+      particles = makeParticles();
+      requestAnimationFrame(draw);
+    }
+
+    window.addEventListener('resize', () => {
+      resizeCanvas();
+      orbs = makeOrbs();
+    });
+
+    initCanvas();
+
+    const card = document.getElementById('loginCard');
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    const loginStatus = document.getElementById('loginStatus');
+
+    function setStep(step) {
+      card.dataset.step = String(step);
+      clearStatuses();
+
+      setTimeout(() => {
+        if (step === 0) usernameInput.focus();
+        if (step === 2) focusCodeGroup('email');
+        if (step === 3) focusCodeGroup('totp');
+      }, 260);
+    }
+
+    function getEmail() {
+      const username = usernameInput.value.trim();
+      if (username.includes('@')) return username;
+      return `${username || 'user'}@novelora.az`;
+    }
+
+    function goToMethods() {
+      const username = usernameInput.value.trim();
+      const password = passwordInput.value.trim();
+
+      if (!username || !password) {
+        loginStatus.textContent = 'Username və password daxil edin.';
+        return;
+      }
+
+      const email = getEmail();
+      document.getElementById('emailMethodText').textContent = email;
+      document.getElementById('emailTarget').textContent = email;
+      setStep(1);
+    }
+
+    function selectMethod(method) {
+      if (method === 'email') setStep(2);
+      if (method === 'totp') setStep(3);
+    }
+
+    function clearStatuses() {
+      document.querySelectorAll('.status').forEach(item => item.textContent = '');
+    }
+
+    function focusCodeGroup(group) {
+      const first = document.querySelector(`[data-code-group="${group}"] .code-input`);
+      first?.focus();
+    }
+
+    function getCode(group) {
+      return [...document.querySelectorAll(`[data-code-group="${group}"] .code-input`)]
+        .map(input => input.value)
+        .join('');
+    }
+
+    function verifyCode(group) {
+      const code = getCode(group);
+      const status = document.getElementById(`${group}Status`);
+
+      if (code.length !== 6) {
+        status.textContent = '6 rəqəmli kodu tam daxil edin.';
+        return;
+      }
+
+      status.style.color = 'var(--teal)';
+      status.textContent = 'Kod qəbul edildi.';
+    }
+
+    document.querySelectorAll('.code-row').forEach(row => {
+      const inputs = [...row.querySelectorAll('.code-input')];
+
+      inputs.forEach((input, index) => {
+        input.addEventListener('input', () => {
+          input.value = input.value.replace(/\D/g, '').slice(0, 1);
+          if (input.value && inputs[index + 1]) inputs[index + 1].focus();
+        });
+
+        input.addEventListener('keydown', (event) => {
+          if (event.key === 'Backspace' && !input.value && inputs[index - 1]) {
+            inputs[index - 1].focus();
+          }
+        });
+
+        input.addEventListener('paste', (event) => {
+          event.preventDefault();
+          const pasted = event.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+          pasted.split('').forEach((char, charIndex) => {
+            if (inputs[charIndex]) inputs[charIndex].value = char;
+          });
+          const next = inputs[Math.min(pasted.length, inputs.length - 1)];
+          next?.focus();
+        });
+      });
+    });
+
+    usernameInput.focus();
+  </script>
+</body>
+</html>

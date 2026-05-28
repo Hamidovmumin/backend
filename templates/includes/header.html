@@ -1,0 +1,29 @@
+<!-- ══ NAV ══════════════════════════════════════════ -->
+<nav class="site-nav">
+    <div class="container h-100">
+        <div class="d-flex align-items-center justify-content-between gap-3 h-100 flex-wrap">
+
+            <a href="#" class="d-flex align-items-center gap-3 text-decoration-none flex-shrink-0">
+                <div class="logo-mark"><i class="bi bi-book-half"></i></div>
+                <div>
+                    <div class="brand-name">Novelora</div>
+                    <div class="brand-sub">Book Store</div>
+                </div>
+            </a>
+
+            <div class="search-shell mx-lg-auto">
+                <input type="search" placeholder="Kitab, müəllif ya kateqoriya axtar…">
+                <i class="bi bi-search si"></i>
+            </div>
+
+            <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                <a href="{% url 'login' %}"><button class="btn-nav btn-nav-outline"><i class="bi bi-person"></i> Login</button></a>
+                <button class="btn-nav btn-nav-fill" id="cartBtn">
+                    <i class="bi bi-bag"></i> Səbət
+                    <span class="cart-count" id="cartCount">0</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+</nav>
