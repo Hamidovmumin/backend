@@ -30,7 +30,7 @@ def start_scheduler():
 
     print(
         f"[Scheduler] Started - cleanup runs every "
-        f"30 minutes"
+        f"{settings.SESSION_CLEANUP_INTERVAL_MINUTES} minutes"
     )
 
 def shutdown_scheduler():
