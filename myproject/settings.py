@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'tags',
     'book',
     'registration',
+    'core.apps.CoreConfig',
 ]
 
 REST_FRAMEWORK = {
