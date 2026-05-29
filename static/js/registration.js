@@ -221,7 +221,6 @@
   })();
 
 // API
-
   const START_SESSION_URL = "/api/registration/1/start/";
   const REGISTER_STEP_1_URL = "/api/registration/2/validate/username/";
   const REGISTER_STEP_2_URL = "/api/registration/3/validate/email/";
@@ -352,19 +351,19 @@
     return data;
   }
 
-  function showToast(message, type = 'error') {
-    const toastBox = document.getElementById('toastBox');
-    const toast = document.createElement('div');
+ function showToast(message, type = 'error') {
+  const toastBox = document.getElementById('toastBox');
+  const toast = document.createElement('div');
 
-    toast.className = `toast ${type === 'success' ? 'success' : ''}`;
-    toast.textContent = message;
+  toast.className = `app-toast ${type === 'success' ? 'success' : ''}`;
+  toast.textContent = message;
 
-    toastBox.appendChild(toast);
+  toastBox.appendChild(toast);
 
-    setTimeout(() => {
-      toast.remove();
-    }, 9000);
-  }
+  setTimeout(() => {
+    toast.remove();
+  }, 10000);
+}
 
   function setStep(step) {
     card.dataset.step = String(step);
@@ -447,11 +446,6 @@
     const status = document.getElementById('step2Status');
     const button = document.querySelector('[onclick="submitStep2()"]');
 
-    if (!validEmail(email)) {
-      status.textContent = 'Düzgün email daxil edin.';
-      return;
-    }
-
     setButtonLoading(button, true);
 
     try {
@@ -511,6 +505,10 @@
       return;
     }
 
+    if (code.length !== 6) {
+      status.textContent = '6 rəqəmli kodu tam daxil edin.';
+      return;
+    }
 
     setButtonLoading(button, true);
 

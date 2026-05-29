@@ -2,192 +2,248 @@
 <!doctype html>
 <html lang="az">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Qeydiyyat — Novelora</title>
-    <link rel="stylesheet" href="{% static 'css/registration.css' %}">
-    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap"
-          rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Qeydiyyat — Novelora</title>
 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
+  <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/registration.css' %}">
 </head>
+
 <body>
-<div id="toastBox" class="toast-box"></div>
-<canvas id="bg"></canvas>
+  <form style="display:none" autocomplete="off">
+    <input type="text" name="fake_username">
+    <input type="password" name="fake_password">
+    <input type="email" name="fake_email">
+  </form>
 
-<div class="bg-canvas">
-    <div class="bg-grid"></div>
-    <div class="ruled-lines"></div>
+  <div id="toastBox" class="toast-box"></div>
+  <canvas id="bg"></canvas>
 
-    <span class="glyph" style="font-size:220px;top:-40px;left:-20px;transform:rotate(-8deg)">N</span>
-    <span class="glyph" style="font-size:160px;bottom:30px;right:-10px;transform:rotate(6deg)">ə</span>
-    <span class="glyph" style="font-size:100px;top:45%;left:3%;transform:rotate(-14deg);opacity:.06">§</span>
-    <span class="glyph" style="font-size:80px;top:15%;right:12%;transform:rotate(10deg);opacity:.05">¶</span>
-</div>
-
-<main class="register-shell">
+  <main class="register-shell">
     <div class="brand">
-        <div class="logo-mark"><i class="bi bi-book-half"></i></div>
-        <div class="brand-name">Novelora</div>
-        <div class="brand-sub">Yeni hesab yaradın</div>
+      <div class="logo-mark"><i class="bi bi-book-half"></i></div>
+      <div class="brand-name">Novelora</div>
+      <div class="brand-sub">Yeni hesab yaradın</div>
     </div>
 
     <section class="register-card" id="registerCard" data-step="0">
-        {% csrf_token %}
-        <input class="hidden-field" type="hidden" id="totpCodeHidden">
+      {% csrf_token %}
 
-        <div class="slider">
-            <div class="panel">
-                <div class="panel-head">
-                    <div class="eyebrow">Mərhələ 1</div>
-                    <h1 class="panel-title">Əsas məlumatlar</h1>
-                    <p class="panel-text">Username, first name və last name daxil edin.</p>
-                </div>
+      <input type="text" style="display:none" autocomplete="username">
+      <input type="password" style="display:none" autocomplete="new-password">
+      <input class="hidden-field" type="hidden" id="totpCodeHidden">
 
-                <div class="field-group">
-                    <div class="field">
-                        <label for="username">Username</label>
-                        <div class="field-wrap">
-                            <i class="bi bi-person"></i>
-                            <input id="username" type="text" autocomplete="username"
-                                   placeholder="məsələn: leyla.aliyeva">
-                        </div>
-                    </div>
+      <div class="slider">
+        <div class="panel">
+          <div class="panel-head">
+            <div class="eyebrow">Mərhələ 1</div>
+            <h1 class="panel-title">Əsas məlumatlar</h1>
+            <p class="panel-text">Username, first name və last name daxil edin.</p>
+          </div>
 
-                    <div class="field">
-                        <label for="firstName">First name</label>
-                        <div class="field-wrap">
-                            <i class="bi bi-person-badge"></i>
-                            <input id="firstName" type="text" autocomplete="given-name" placeholder="Leyla">
-                        </div>
-                    </div>
-
-                    <div class="field">
-                        <label for="lastName">Last name</label>
-                        <div class="field-wrap">
-                            <i class="bi bi-person-vcard"></i>
-                            <input id="lastName" type="text" autocomplete="family-name" placeholder="Əliyeva">
-                        </div>
-                    </div>
-                </div>
-
-                <button class="primary-btn" type="button" onclick="submitStep1()">
-                    Next <i class="bi bi-arrow-right"></i>
-                </button>
-                <div class="status" id="step1Status"></div>
+          <div class="field-group">
+            <div class="field">
+              <label for="username">Username</label>
+              <div class="field-wrap">
+                <i class="bi bi-person"></i>
+                <input
+                  id="username"
+                  type="text"
+                  autocomplete="new-password"
+                  data-lpignore="true"
+                  data-1p-ignore="true"
+                  data-form-type="other"
+                  autocorrect="off"
+                  autocapitalize="off"
+                  spellcheck="false"
+                  placeholder="məsələn: memmedov01"
+                >
+              </div>
             </div>
 
-            <div class="panel">
-                <div class="panel-head">
-                    <div class="eyebrow">Mərhələ 2</div>
-                    <h2 class="panel-title">Email daxil edin</h2>
-                    <p class="panel-text">Təsdiq kodunu göndərmək üçün email ünvanı lazımdır.</p>
-                </div>
-
-                <div class="field-group">
-                    <div class="field">
-                        <label for="email">Email</label>
-                        <div class="field-wrap">
-                            <i class="bi bi-envelope"></i>
-                            <input id="email" type="email" autocomplete="email" placeholder="leyla@novelora.az">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="panel-actions">
-                    <button class="primary-btn" type="button" onclick="submitStep2()">
-                        Kodu göndər <i class="bi bi-arrow-right"></i>
-                    </button>
-                    <button class="ghost-btn" type="button" onclick="setStep(0)">Geri qayıt</button>
-                </div>
-                <div class="status" id="step2Status"></div>
+            <div class="field">
+              <label for="firstName">First name</label>
+              <div class="field-wrap">
+                <i class="bi bi-person-badge"></i>
+                <input
+                  id="firstName"
+                  type="text"
+                  autocomplete="new-password"
+                  data-lpignore="true"
+                  data-1p-ignore="true"
+                  data-form-type="other"
+                  autocorrect="off"
+                  autocapitalize="off"
+                  spellcheck="false"
+                  placeholder="Nicat"
+                >
+              </div>
             </div>
 
-            <div class="panel">
-                <div class="panel-head">
-                    <div class="eyebrow">Mərhələ 3</div>
-                    <h2 class="panel-title">TOTP təsdiqi</h2>
-                    <p class="panel-text">Google Authenticator ilə QR kodu scan edin və yaranan 6 rəqəmli kodu daxil
-                        edin.</p>
-                    <p class="text-danger" style="font-weight: 500; margin-top: 10px; text-align: justify;">
-                        * Diqqət: Bu sahənin doldurulması məcburi deyildir. Əgər ikiaddımlı təsdiqləməni aktiv etmək
-                        istəmirsinizsə, bu mərhələni ötürə bilərsiniz.
-                    </p>
-                </div>
-
-                <div class="qr-wrap">
-                    <div class="qr-box" id="qrBox"></div>
-                    <div class="qr-caption">Authenticator QR</div>
-                </div>
-
-                <div class="code-row" data-code-group="totp">
-                    <input class="code-input" inputmode="numeric" maxlength="1" aria-label="TOTP 1">
-                    <input class="code-input" inputmode="numeric" maxlength="1" aria-label="TOTP 2">
-                    <input class="code-input" inputmode="numeric" maxlength="1" aria-label="TOTP 3">
-                    <input class="code-input" inputmode="numeric" maxlength="1" aria-label="TOTP 4">
-                    <input class="code-input" inputmode="numeric" maxlength="1" aria-label="TOTP 5">
-                    <input class="code-input" inputmode="numeric" maxlength="1" aria-label="TOTP 6">
-                </div>
-
-                <div class="panel-actions">
-                    <button class="primary-btn" type="button" onclick="submitStep3()">
-                        Təsdiqlə və davam et <i class="bi bi-arrow-right"></i>
-                    </button>
-                    <button class="ghost-btn" type="button" onclick="setStep(1)">Geri qayıt</button>
-                </div>
-                <div class="status" id="step3Status"></div>
+            <div class="field">
+              <label for="lastName">Last name</label>
+              <div class="field-wrap">
+                <i class="bi bi-person-vcard"></i>
+                <input
+                  id="lastName"
+                  type="text"
+                  autocomplete="new-password"
+                  data-lpignore="true"
+                  data-1p-ignore="true"
+                  data-form-type="other"
+                  autocorrect="off"
+                  autocapitalize="off"
+                  spellcheck="false"
+                  placeholder="Memmedov"
+                >
+              </div>
             </div>
+          </div>
 
-            <div class="panel">
-                <div class="panel-head">
-                    <div class="eyebrow">Mərhələ 4</div>
-                    <h2 class="panel-title">Parol təyin edin</h2>
-                    <p class="panel-text">Parolu iki dəfə eyni şəkildə daxil edin.</p>
-                </div>
-
-                <div class="field-group">
-                    <div class="field">
-                        <label for="password">Parol</label>
-                        <div class="field-wrap">
-                            <i class="bi bi-lock"></i>
-                            <input id="password" type="password" autocomplete="new-password"
-                                   placeholder="Parol daxil edin">
-                        </div>
-                    </div>
-
-                    <div class="field">
-                        <label for="passwordRepeat">Parolu təkrarla</label>
-                        <div class="field-wrap">
-                            <i class="bi bi-shield-lock"></i>
-                            <input id="passwordRepeat" type="password" autocomplete="new-password"
-                                   placeholder="Parolu yenidən daxil edin">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="panel-actions">
-                    <button class="primary-btn" type="button" onclick="submitFinish()">
-                        Qeydiyyatı tamamla <i class="bi bi-check2"></i>
-                    </button>
-                    <button class="ghost-btn" type="button" onclick="setStep(2)">Geri qayıt</button>
-                </div>
-                <div class="status" id="step4Status"></div>
-            </div>
+          <button class="primary-btn" type="button" onclick="submitStep1()">
+            Next <i class="bi bi-arrow-right"></i>
+          </button>
+          <div class="status" id="step1Status"></div>
         </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <div class="eyebrow">Mərhələ 2</div>
+            <h2 class="panel-title">Email daxil edin</h2>
+            <p class="panel-text">Təsdiq kodunu göndərmək üçün email ünvanı lazımdır.</p>
+          </div>
+
+          <div class="field-group">
+            <div class="field">
+              <label for="email">Email</label>
+              <div class="field-wrap">
+                <i class="bi bi-envelope"></i>
+                <input
+                  id="email"
+                  type="text"
+                  inputmode="email"
+                  autocomplete="new-password"
+                  data-lpignore="true"
+                  data-1p-ignore="true"
+                  data-form-type="other"
+                  autocorrect="off"
+                  autocapitalize="off"
+                  spellcheck="false"
+                  placeholder="leyla@novelora.az"
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="panel-actions">
+            <button class="primary-btn" type="button" onclick="submitStep2()">
+              Kodu göndər <i class="bi bi-arrow-right"></i>
+            </button>
+            <button class="ghost-btn" type="button" onclick="setStep(0)">Geri qayıt</button>
+          </div>
+          <div class="status" id="step2Status"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <div class="eyebrow">Mərhələ 3</div>
+            <h2 class="panel-title">TOTP təsdiqi</h2>
+            <p class="panel-text">
+              Google Authenticator ilə QR kodu scan edin və yaranan 6 rəqəmli kodu daxil edin.
+            </p>
+            <p class="optional-note">
+              * Diqqət: Bu sahənin doldurulması məcburi deyildir. Əgər ikiaddımlı təsdiqləməni aktiv etmək istəmirsinizsə, bu mərhələni ötürə bilərsiniz.
+            </p>
+          </div>
+
+          <div class="qr-wrap">
+            <div class="qr-box" id="qrBox"></div>
+            <div class="qr-caption">Authenticator QR</div>
+          </div>
+
+          <div class="code-row" data-code-group="totp">
+            <input class="code-input" inputmode="numeric" maxlength="1" autocomplete="off" aria-label="TOTP 1">
+            <input class="code-input" inputmode="numeric" maxlength="1" autocomplete="off" aria-label="TOTP 2">
+            <input class="code-input" inputmode="numeric" maxlength="1" autocomplete="off" aria-label="TOTP 3">
+            <input class="code-input" inputmode="numeric" maxlength="1" autocomplete="off" aria-label="TOTP 4">
+            <input class="code-input" inputmode="numeric" maxlength="1" autocomplete="off" aria-label="TOTP 5">
+            <input class="code-input" inputmode="numeric" maxlength="1" autocomplete="off" aria-label="TOTP 6">
+          </div>
+
+          <div class="panel-actions">
+            <button class="primary-btn" type="button" onclick="submitStep3()">
+              Keç <i class="bi bi-arrow-right"></i>
+            </button>
+            <button class="ghost-btn" type="button" onclick="setStep(1)">Geri qayıt</button>
+          </div>
+          <div class="status" id="step3Status"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <div class="eyebrow">Mərhələ 4</div>
+            <h2 class="panel-title">Parol təyin edin</h2>
+            <p class="panel-text">Parolu iki dəfə eyni şəkildə daxil edin.</p>
+          </div>
+
+          <div class="field-group">
+            <div class="field">
+              <label for="password">Parol</label>
+              <div class="field-wrap">
+                <i class="bi bi-lock"></i>
+                <input
+                  id="password"
+                  type="password"
+                  autocomplete="new-password"
+                  data-lpignore="true"
+                  data-1p-ignore="true"
+                  data-form-type="other"
+                  placeholder="Parol daxil edin"
+                >
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="passwordRepeat">Parolu təkrarla</label>
+              <div class="field-wrap">
+                <i class="bi bi-shield-lock"></i>
+                <input
+                  id="passwordRepeat"
+                  type="password"
+                  autocomplete="new-password"
+                  data-lpignore="true"
+                  data-1p-ignore="true"
+                  data-form-type="other"
+                  placeholder="Parolu yenidən daxil edin"
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="panel-actions">
+            <button class="primary-btn" type="button" onclick="submitFinish()">
+              Qeydiyyatı tamamla <i class="bi bi-check2"></i>
+            </button>
+            <button class="ghost-btn" type="button" onclick="setStep(2)">Geri qayıt</button>
+          </div>
+          <div class="status" id="step4Status"></div>
+        </div>
+      </div>
     </section>
 
     <section class="register-card success-state" id="successState">
-        <div class="success-icon"><i class="bi bi-check2-circle"></i></div>
-        <h2 class="success-title">Qeydiyyat uğurla başa çatdı</h2>
-        <p class="success-text">E-poçta link göndərildi. Həmin linkə daxil olaraq hesabınızı aktiv edin.</p>
+      <div class="success-icon"><i class="bi bi-check2-circle"></i></div>
+      <h2 class="success-title">Qeydiyyat uğurla başa çatdı</h2>
+      <p class="success-text">E-poçta link göndərildi. Həmin linkə daxil olaraq hesabınızı aktiv edin.</p>
     </section>
-</main>
+  </main>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="{% static 'js/registration.js' %}"></script>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="{% static 'js/registration.js' %}"></script>
 </body>
 </html>
