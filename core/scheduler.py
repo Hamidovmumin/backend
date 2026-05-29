@@ -1,6 +1,7 @@
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 from core.cleanup import cleanup_expired_registration_sessions
+from django.conf import settings
 
 scheduler = BackgroundScheduler()
 
@@ -19,7 +20,7 @@ def start_scheduler():
     for job in CLEANUP_JOBS:
         scheduler.add_job(
             func=job['func'],
-            trigger=IntervalTrigger(minutes=30),
+            trigger=IntervalTrigger(minutes=settings.SESSION_CLEANUP_INTERVAL_MINUTES),
             id=job['id'],
             name=job['name'],
             replace_existing=True

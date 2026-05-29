@@ -1,4 +1,5 @@
-(() => {
+// Animasiya
+  (() => {
     const canvas = document.getElementById('bg');
 
     if (!canvas) return;
@@ -218,11 +219,9 @@
 
     initCanvas();
   })();
-</script>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+// API
 
-<script>
   const START_SESSION_URL = "/api/registration/1/start/";
   const REGISTER_STEP_1_URL = "/api/registration/2/validate/username/";
   const REGISTER_STEP_2_URL = "/api/registration/3/validate/email/";
@@ -374,7 +373,12 @@
     setTimeout(() => {
       if (step === 0) usernameInput.focus();
       if (step === 1) emailInput.focus();
-      if (step === 2) focusCodeGroup('totp');
+
+      if (step === 2) {
+        updateTotpActionButton();
+        focusCodeGroup('totp');
+      }
+
       if (step === 3) passwordInput.focus();
     }, 260);
   }
@@ -419,8 +423,6 @@
     const lastName = lastNameInput.value.trim();
     const status = document.getElementById('step1Status');
     const button = document.querySelector('[onclick="submitStep1()"]');
-
-
 
     setButtonLoading(button, true);
 
@@ -486,15 +488,29 @@
       .join('');
   }
 
+  function updateTotpActionButton() {
+    const button = document.querySelector('[onclick="submitStep3()"]');
+
+    if (!button || button.disabled) return;
+
+    const code = getCode('totp');
+
+    button.innerHTML = code
+      ? 'Kodu təsdiqlə <i class="bi bi-check2"></i>'
+      : 'Keç <i class="bi bi-arrow-right"></i>';
+  }
+
   async function submitStep3() {
     const code = getCode('totp');
     const status = document.getElementById('step3Status');
     const button = document.querySelector('[onclick="submitStep3()"]');
 
-    if (code.length !== 6) {
-      status.textContent = '6 rəqəmli kodu tam daxil edin.';
+    if (!code) {
+      totpCodeHidden.value = '';
+      setStep(3);
       return;
     }
+
 
     setButtonLoading(button, true);
 
@@ -518,7 +534,6 @@
   async function submitFinish() {
     const password = passwordInput.value;
     const passwordRepeat = passwordRepeatInput.value;
-    const totpCode = getCode('totp');
     const status = document.getElementById('step4Status');
     const button = document.querySelector('[onclick="submitFinish()"]');
 
@@ -536,7 +551,6 @@
 
       const createUserData = await postData(CREATE_USER_ACCOUNT, {});
 
-      totpCodeHidden.value = totpCode;
       card.style.display = 'none';
       successState.classList.add('show');
       showToast(createUserData.message || passwordData.message || 'Qeydiyyat tamamlandı.', 'success');
@@ -577,12 +591,23 @@
     inputs.forEach((input, index) => {
       input.addEventListener('input', () => {
         input.value = input.value.replace(/\D/g, '').slice(0, 1);
-        if (input.value && inputs[index + 1]) inputs[index + 1].focus();
+
+        if (input.value && inputs[index + 1]) {
+          inputs[index + 1].focus();
+        }
+
+        if (row.dataset.codeGroup === 'totp') {
+          updateTotpActionButton();
+        }
       });
 
       input.addEventListener('keydown', event => {
         if (event.key === 'Backspace' && !input.value && inputs[index - 1]) {
           inputs[index - 1].focus();
+        }
+
+        if (row.dataset.codeGroup === 'totp') {
+          setTimeout(updateTotpActionButton, 0);
         }
       });
 
@@ -599,6 +624,10 @@
         });
 
         inputs[Math.min(pasted.length, inputs.length - 1)]?.focus();
+
+        if (row.dataset.codeGroup === 'totp') {
+          updateTotpActionButton();
+        }
       });
     });
   });
@@ -606,6 +635,7 @@
   document.addEventListener('DOMContentLoaded', async () => {
     try {
       await startRegistrationSession();
+      updateTotpActionButton();
       usernameInput.focus();
     } catch (error) {
       showToast(error.message);

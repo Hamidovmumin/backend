@@ -26,6 +26,7 @@ from rest_framework.exceptions import ValidationError
 import pyotp
 from utils.email_sms import send_email_sms
 from django.core.cache import cache
+from django.conf import settings
 
 @extend_schema(auth=[],tags=['Registration'])
 class StartSessionView(APIView):
@@ -37,8 +38,8 @@ class StartSessionView(APIView):
         data = session_service.start_session(
             request=request,
             crud=registration_crud,
-            rate_limit_minutes=1,
-            max_attempts=5,
+            rate_limit_minutes=settings.RATE_LIMIT_MINUTES,
+            max_attempts=settings.MAX_ATTEMPTS,
         )
 
         serializer = Token(data)
@@ -95,7 +96,7 @@ class ValidateUsername(APIView):
 
         if not first_name or not last_name:
             raise ValidationError({
-                "message": "First name və last name boş ola bilməz."
+                "message": "Ad və Soyad boş ola bilməz."
             })
 
         user = user_crud.get_by_username(username=username)
@@ -148,7 +149,7 @@ class ValidateEmail(APIView):
 
         user = user_crud.get_by_email(email)
         if user:
-            raise ValidationError({"message": f'{email} e-poçt artıq istifadə olunub!'})
+            raise ValidationError({"message": f'{email} e-poçtu artıq istifadə olunub!'})
 
         user_registration = registration_crud.get_by_email(email)
         if user_registration:
@@ -262,11 +263,6 @@ class ValidatePassword(APIView):
         serializer = RegistrationPasswordRequest(data=request.data)
         serializer.is_valid(raise_exception=True)
         print("serializer:", time.perf_counter() - t0)
-
-        if not registration_session.totp_is_confirmed:
-            raise ValidationError({
-                'message': 'Totp kodu təsdiq olunmayıb!'
-            })
 
         password = serializer.validated_data.get("password")
         repeat_password = serializer.validated_data.get("repeat_password")

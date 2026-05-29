@@ -29,7 +29,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 FERNET_KEY = os.getenv('FERNET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -142,11 +142,11 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
 ALGORITHM=os.getenv('ALGORITHM')
 
 SPECTACULAR_SETTINGS = {
@@ -168,6 +168,12 @@ SPECTACULAR_SETTINGS = {
         {'BearerAuth': []},
     ],
 }
+
+RATE_LIMIT_MINUTES=int(os.getenv('RATE_LIMIT_MINUTES'))
+MAX_ATTEMPTS=int(os.getenv('MAX_ATTEMPTS'))
+SESSION_EXPIRE_MINUTES=int(os.getenv('SESSION_EXPIRE_MINUTES'))
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv('ACCESS_TOKEN_EXPIRE_MINUTES'))
+SESSION_CLEANUP_INTERVAL_MINUTES=int(os.getenv('SESSION_CLEANUP_INTERVAL_MINUTES'))
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = os.getenv('EMAIL_HOST')

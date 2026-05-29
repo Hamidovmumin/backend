@@ -1,16 +1,12 @@
-from django.http import HttpRequest
 from crud.auth.base import CRUDSession
+from myproject import settings
 from utils.generator import generate_string
 import uuid
 from utils.jwt_token import create_access_token
-from rest_framework.response import Response
-from rest_framework import status
-from serializers.addons import Token
 from datetime import datetime, timedelta, timezone
 from rest_framework.request import Request
 from rest_framework.exceptions import Throttled
 from utils.ip_address import get_ip
-
 
 class SessionService:
     def start_session(
@@ -30,8 +26,9 @@ class SessionService:
             )
 
         session_token = generate_string(length=256,digits=True,lowercase=True,uppercase=True)
-        access_token_expires = timedelta(minutes=10)
+        access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
         device_uuid  = uuid.uuid4()
+
         crud.create(
             session=session_token,
             ip_address=ip_address,
@@ -52,7 +49,6 @@ class SessionService:
             "token_type": "Bearer",
             "expires_in": str(datetime.now(timezone.utc) + access_token_expires),
         }
-
 
 session_service = SessionService()
 
