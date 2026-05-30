@@ -1,7 +1,8 @@
+
+from django.http import Http404, HttpRequest
 from django.shortcuts import render
-from django.http import HttpRequest,HttpHeaders
-from services.session import session_service
-from crud.auth.registration import registration_crud
+from django.core.cache import cache
+from utils.ip_address import get_ip
 
 def home(request):
     return render(request, 'index/index.html')
@@ -10,5 +11,10 @@ def login(request):
     return render(request, 'auth/login.html')
 
 def register(request: HttpRequest):
+    ip_address = get_ip(request)
+    block_key = f"rl:registration:blocked:{ip_address}"
+
+    if cache.get(block_key):
+        raise Http404
     return render(request,"auth/registration.html")
 

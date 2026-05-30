@@ -268,6 +268,11 @@
   }
 
   async function parseResponseData(response) {
+
+  if (response.status === 404) {
+     window.location.assign("/404-not-found/");
+  return;
+  }
     const contentType = response.headers.get('content-type') || '';
 
     if (contentType.includes('application/json')) {
@@ -505,10 +510,6 @@
       return;
     }
 
-    if (code.length !== 6) {
-      status.textContent = '6 rəqəmli kodu tam daxil edin.';
-      return;
-    }
 
     setButtonLoading(button, true);
 

@@ -16,7 +16,7 @@ from cryptography.fernet import Fernet,InvalidToken
 from myproject.settings import FERNET_KEY
 from django.contrib.auth.tokens import default_token_generator
 
-class ActivateView(TemplateView,APIView):
+class ActivateView(TemplateView):
     authentication_classes = [TokenAuthentication]
     template_name = 'account/activate.html'
 

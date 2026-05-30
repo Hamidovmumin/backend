@@ -27,9 +27,11 @@ import pyotp
 from utils.email_sms import send_email_sms
 from django.core.cache import cache
 from django.conf import settings
+from utils.block import Throttle
 
 @extend_schema(auth=[],tags=['Registration'])
 class StartSessionView(APIView):
+    throttle_classes = [Throttle]
     authentication_classes = []
     permission_classes = []
 
@@ -53,36 +55,12 @@ class StartSessionView(APIView):
     request=RegistrationUsernameRequest,
 )
 class ValidateUsername(APIView):
+    throttle_classes = [Throttle]
     authentication_classes = [RegistrationAuthentication]
     permission_classes = [AllowAny] # IsAuthenticated
 
+
     # pip install django-redis
-    def initial(self, request, *args, **kwargs):
-        super().initial(request,*args,**kwargs)
-
-        if request.method == 'POST':
-            ip = request.META.get('REMOTE_ADDR')
-
-            count_key = f"rl:send-verify:count:{ip}"
-            block_key = f"rl:send-verify:blocked:{ip}"
-
-            # Əgər artıq bloklanıbsa
-            if cache.get(block_key):
-                raise ValidationError({"message": "Limit reached. Try again in 1 minute."})
-
-            # Sayı artır
-            count = cache.get(count_key, 0)
-
-            if count == 0:
-                cache.set(count_key, 1, timeout=60)  # Pəncərə başladı
-            else:
-                cache.incr(count_key)
-                count = cache.get(count_key, 0)
-
-            # Limit aşıldısa — 60 saniyə blokla
-            if count > 5:
-                cache.set(block_key, True, timeout=60)
-                raise ValidationError({"message": "Limit reached. Try again in 1 minute."})
 
     def post(self, request):
         registration_session = request.user
@@ -136,6 +114,7 @@ class ValidateUsername(APIView):
     request=RegistrationEmailRequest,
 )
 class ValidateEmail(APIView):
+    throttle_classes = [Throttle]
     authentication_classes = [RegistrationAuthentication]
     permission_classes = [AllowAny]
 
@@ -175,6 +154,7 @@ class ValidateEmail(APIView):
     responses={200: RegistrationTOTPResponse},
 )
 class ValidateTOTP(APIView):
+    throttle_classes = [Throttle]
     authentication_classes = [RegistrationAuthentication]
     permission_classes = [AllowAny]
 
@@ -215,6 +195,7 @@ class ValidateTOTP(APIView):
     request=RegistrationConfirmTOTPRequest,
 )
 class ConfirmTOTP(APIView):
+    throttle_classes = [Throttle]
     authentication_classes = [RegistrationAuthentication]
     permission_classes = [AllowAny]
 
@@ -251,6 +232,7 @@ class ConfirmTOTP(APIView):
     request=RegistrationPasswordRequest,
 )
 class ValidatePassword(APIView):
+    throttle_classes = [Throttle]
     authentication_classes = [RegistrationAuthentication]
     permission_classes = [AllowAny]
 
@@ -297,6 +279,7 @@ class ValidatePassword(APIView):
 )
 
 class CreateUser(APIView):
+    throttle_classes = [Throttle]
     authentication_classes = [RegistrationAuthentication]
     permission_classes = [AllowAny]
 
@@ -339,6 +322,7 @@ class CreateUser(APIView):
     tags=['Registration'],
 )
 class SendEmailSMS(APIView):
+    throttle_classes = [Throttle]
     authentication_classes = [RegistrationAuthentication]
     permission_classes = [AllowAny]
 
