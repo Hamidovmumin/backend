@@ -29,7 +29,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 FERNET_KEY = os.getenv('FERNET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
