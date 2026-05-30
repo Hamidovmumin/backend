@@ -270,9 +270,9 @@
   async function parseResponseData(response) {
 
   if (response.status === 404) {
-     window.location.assign("/404-not-found/");
+  window.location.href = `${window.location.origin}/404-not-found/`;
   return;
-  }
+}
     const contentType = response.headers.get('content-type') || '';
 
     if (contentType.includes('application/json')) {
