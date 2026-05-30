@@ -169,7 +169,22 @@ SPECTACULAR_SETTINGS = {
         {'BearerAuth': []},
     ],
 }
-
+if DEBUG:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        }
+    }
+else:
+    CACHES = {
+        "default": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": "redis://127.0.0.1:6379/1",
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            }
+        }
+    }
 RATE_LIMIT_MINUTES=int(os.getenv('RATE_LIMIT_MINUTES'))
 MAX_ATTEMPTS=int(os.getenv('MAX_ATTEMPTS'))
 SESSION_EXPIRE_MINUTES=int(os.getenv('SESSION_EXPIRE_MINUTES'))
