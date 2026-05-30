@@ -64,6 +64,7 @@ class ValidateUsername(APIView):
 
     def post(self, request):
         registration_session = request.user
+        print('Endpoint:' + request.META.get('REMOTE_ADDR'))
 
         serializer = RegistrationUsernameRequest(data=request.data)
         serializer.is_valid(raise_exception=True)

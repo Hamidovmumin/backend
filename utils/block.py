@@ -9,6 +9,7 @@ class Throttle(BaseThrottle):
 
     def allow_request(self, request, view):
         ip_address = get_ip(request)
+        print("Throttle: "+ip_address)
 
         endpoint = view.__class__.__name__
 
