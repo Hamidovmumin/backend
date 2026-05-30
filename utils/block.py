@@ -12,8 +12,8 @@ class Throttle(BaseThrottle):
 
         endpoint = view.__class__.__name__
 
-        count_key = f"rl:{endpoint}:count:{ip_address}"
-        block_key = f"rl:{endpoint}:blocked:{ip_address}"
+        count_key = f"rl:registration:count:{ip_address}"
+        block_key = f"rl:registration:blocked:{ip_address}"
 
         if cache.get(block_key):
             raise Http404()
