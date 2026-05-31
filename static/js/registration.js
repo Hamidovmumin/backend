@@ -648,6 +648,7 @@
       updateTotpActionButton();
       usernameInput.focus();
     } catch (error) {
+     if (error.message === "REDIRECTING_TO_404") return;
       showToast(error.message);
     }
   });
