@@ -1,7 +1,7 @@
 from utils.ip_address import get_ip
 from django.core.cache import cache
 from django.http import Http404
-from rest_framework.throttling import BaseThrottle
+from rest_framework.throttling import BaseThrottle,AnonRateThrottle
 from rest_framework.exceptions import Throttled
 from django.conf import settings
 from  django.shortcuts import reverse
@@ -9,7 +9,7 @@ from  django.shortcuts import reverse
 class Throttle(BaseThrottle):
 
     def allow_request(self, request, view):
-        ip_address = get_ip(request)
+        ip_address = self.get_ident(request)
 
         # endpoint = view.__class__.__name__
         group = getattr(view, 'throttle_group', view.__class__.__name__)
