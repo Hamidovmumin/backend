@@ -269,10 +269,10 @@
 
   async function parseResponseData(response) {
 
-  if (response.status === 404) {
-  window.location.href = window.location.pathname;
-  return;
-}
+if (response.status === 404) {
+    window.location.href = "/404/";
+    throw new Error("404 Not Found");
+  }
     const contentType = response.headers.get('content-type') || '';
 
     if (contentType.includes('application/json')) {

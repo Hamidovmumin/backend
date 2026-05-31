@@ -32,6 +32,7 @@ from utils.block import Throttle
 @extend_schema(auth=[],tags=['Registration'])
 class StartSessionView(APIView):
     throttle_classes = [Throttle]
+    throttle_group = 'registration'
     authentication_classes = []
     permission_classes = []
 
@@ -56,6 +57,7 @@ class StartSessionView(APIView):
 )
 class ValidateUsername(APIView):
     throttle_classes = [Throttle]
+    throttle_group = 'registration'
     authentication_classes = [RegistrationAuthentication]
     permission_classes = [AllowAny] # IsAuthenticated
 

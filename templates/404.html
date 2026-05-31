@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404 - Səhifə Tapılmadı</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    min-height: 100vh;
+    background: #0a0a0f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Grotesk', sans-serif;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .bg-grid {
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    z-index: 0;
+  }
+
+  .glow {
+    position: fixed;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(99,60,245,0.15) 0%, transparent 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 0;
+    animation: pulse 4s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+    50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 2rem;
+    max-width: 600px;
+    width: 100%;
+  }
+
+  .code-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: rgba(99,60,245,0.8);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    display: block;
+    animation: fadeDown 0.6s ease both;
+  }
+
+  .big-number {
+    font-size: clamp(120px, 20vw, 200px);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.05em;
+    background: linear-gradient(135deg, #ffffff 0%, rgba(255,255,255,0.3) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    position: relative;
+    animation: fadeUp 0.7s ease both 0.1s;
+  }
+
+  .big-number::after {
+    content: '404';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(99,60,245,0.4) 0%, transparent 60%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: blur(20px);
+    z-index: -1;
+  }
+
+  .divider {
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(99,60,245,0.8), transparent);
+    margin: 1.5rem auto;
+    animation: fadeUp 0.7s ease both 0.2s;
+  }
+
+  .title {
+    font-size: 28px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.9);
+    margin-bottom: 1rem;
+    animation: fadeUp 0.7s ease both 0.3s;
+  }
+
+  .subtitle {
+    font-size: 16px;
+    color: rgba(255,255,255,0.4);
+    line-height: 1.7;
+    margin-bottom: 2.5rem;
+    animation: fadeUp 0.7s ease both 0.4s;
+  }
+
+  .btn-group {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    animation: fadeUp 0.7s ease both 0.5s;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 28px;
+    background: rgba(99,60,245,0.9);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    border: 1px solid rgba(99,60,245,0.3);
+    cursor: pointer;
+  }
+
+  .btn-primary:hover {
+    background: rgba(99,60,245,1);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(99,60,245,0.4);
+  }
+
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 28px;
+    background: transparent;
+    color: rgba(255,255,255,0.6);
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: 1px solid rgba(255,255,255,0.1);
+    cursor: pointer;
+  }
+
+  .btn-secondary:hover {
+    background: rgba(255,255,255,0.05);
+    color: rgba(255,255,255,0.9);
+    transform: translateY(-2px);
+  }
+
+  .error-meta {
+    margin-top: 3rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: rgba(255,255,255,0.15);
+    animation: fadeUp 0.7s ease both 0.6s;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .float-dots {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .dot {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: rgba(99,60,245,0.5);
+    animation: floatDot linear infinite;
+  }
+
+  @keyframes floatDot {
+    0% { transform: translateY(110vh) scale(0); opacity: 0; }
+    10% { opacity: 1; transform: translateY(90vh) scale(1); }
+    90% { opacity: 1; }
+    100% { transform: translateY(-10vh) scale(0.5); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="glow"></div>
+
+<div class="float-dots" id="dots"></div>
+
+<div class="container">
+  <span class="code-tag">// xəta kodu: 404</span>
+
+  <div class="big-number">404</div>
+
+  <div class="divider"></div>
+
+  <h1 class="title">Səhifə tapılmadı</h1>
+  <p class="subtitle">
+    Axtardığınız səhifə mövcud deyil, silinib<br>
+    və ya ünvan dəyişdirilib.
+  </p>
+
+  <div class="btn-group">
+    <a href="#" class="btn-primary">
+      ← Ana səhifəyə qayıt
+    </a>
+    <a href="#" class="btn-secondary">
+      Əlaqə saxla
+    </a>
+  </div>
+
+  <div class="error-meta">
+    timestamp: <span id="ts"></span> &nbsp;|&nbsp; path: /unknown
+  </div>
+</div>
+
+<script>
+  document.getElementById('ts').textContent = new Date().toISOString().slice(0,19).replace('T',' ');
+
+  const dotsContainer = document.getElementById('dots');
+  for (let i = 0; i < 20; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'dot';
+    dot.style.left = Math.random() * 100 + 'vw';
+    dot.style.animationDuration = (8 + Math.random() * 12) + 's';
+    dot.style.animationDelay = (Math.random() * 10) + 's';
+    dot.style.width = dot.style.height = (3 + Math.random() * 4) + 'px';
+    dot.style.opacity = (0.3 + Math.random() * 0.5).toString();
+    dotsContainer.appendChild(dot);
+  }
+</script>
+
+</body>
+</html>

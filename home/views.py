@@ -15,6 +15,9 @@ def register(request: HttpRequest):
     block_key = f"rl:registration:blocked:{ip_address}"
 
     if cache.get(block_key):
-        raise Http404
+        raise Http404()
+
     return render(request,"auth/registration.html")
 
+def page_404(request: HttpRequest):
+    return render(request, "404.html",status=404)
