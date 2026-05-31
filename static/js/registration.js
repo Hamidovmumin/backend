@@ -270,9 +270,11 @@
   async function parseResponseData(response) {
 
 if (response.status === 404) {
-    window.location.href = "/404/";
-    throw new Error("404 Not Found");
+    window.location.replace("/404/");
+    throw new Error("REDIRECTING_TO_404");
   }
+
+
     const contentType = response.headers.get('content-type') || '';
 
     if (contentType.includes('application/json')) {
@@ -439,6 +441,7 @@ if (response.status === 404) {
 
       setStep(1);
     } catch (error) {
+    if (error.message === "REDIRECTING_TO_404") return;
       showToast(error.message);
       status.textContent = error.message;
     } finally {
@@ -469,6 +472,7 @@ if (response.status === 404) {
       showToast(data.message || 'QR kodu uğurla yaradıldı.', 'success');
       setStep(2);
     } catch (error) {
+    if (error.message === "REDIRECTING_TO_404") return;
       showToast(error.message);
       status.style.color = 'var(--coral)';
       status.textContent = error.message;
