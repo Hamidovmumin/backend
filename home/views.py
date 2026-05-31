@@ -20,4 +20,4 @@ def register(request: HttpRequest):
     return render(request,"auth/registration.html")
 
 def page_404(request: HttpRequest):
-    return render(request, "404.html",status=404)
+    return render(request, "404.html",status=200)
