@@ -275,9 +275,9 @@
 
   async function parseResponseData(response) {
 
-   if (response.status === 404) {
-    goTo404();
-    throw new Error("REDIRECTING_TO_404");
+     if (response.status === 404) {
+    window.location.href = "/404/";
+    throw new Error("404 Not Found");
   }
 
 
