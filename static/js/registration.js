@@ -267,10 +267,14 @@
     return 'Xəta baş verdi.';
   }
 
+  function goTo404() {
+  window.location.href = `${window.location.origin}/404/`;
+}
+
   async function parseResponseData(response) {
 
 if (response.status === 404) {
-    window.location.replace("/404/");
+    goTo404();
     throw new Error("REDIRECTING_TO_404");
   }
 
