@@ -220,6 +220,8 @@
     initCanvas();
   })();
 
+
+
 // API
   const START_SESSION_URL = "/api/registration/1/start/";
   const REGISTER_STEP_1_URL = "/api/registration/2/validate/username/";
@@ -273,11 +275,11 @@
 
   async function parseResponseData(response) {
 
- if (response.status === 404) {
-    alert("404 TUTULDU");
-    window.location.href = "/404/";
-    throw new Error("404 Not Found");
+   if (response.status === 404) {
+    goTo404();
+    throw new Error("REDIRECTING_TO_404");
   }
+
 
 
     const contentType = response.headers.get('content-type') || '';

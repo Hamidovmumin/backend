@@ -2,6 +2,7 @@ from utils.ip_address import get_ip
 from django.core.cache import cache
 from django.http import Http404
 from rest_framework.throttling import BaseThrottle
+from rest_framework.exceptions import Throttled
 from django.conf import settings
 from  django.shortcuts import reverse
 
