@@ -269,8 +269,8 @@
     return 'Xəta baş verdi.';
   }
 
-  function goTo404() {
-  window.location.href = `${window.location.origin}/404/`;
+function goTo404() {
+  window.location.replace(`${window.location.origin}/404/`);
 }
 
   async function parseResponseData(response) {
