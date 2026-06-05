@@ -54,6 +54,38 @@
         radial-gradient(ellipse at center, rgba(255,250,240,0) 0%, rgba(170,120,40,.2) 100%);
     }
 
+    .toast-box {
+      position: fixed;
+      left: 24px;
+      top: 24px;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .toast {
+      min-width: 260px;
+      max-width: 360px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: rgba(200,74,56,.96);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      box-shadow: 0 16px 36px rgba(90,40,20,.22);
+      animation: toastIn .2s ease-out;
+    }
+
+    .toast.success {
+      background: rgba(15,122,114,.96);
+    }
+
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateX(-12px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
     .login-shell {
       width: min(460px, 100%);
       position: relative;
@@ -234,6 +266,28 @@
 
     .primary-btn:hover { background: var(--gold); color: #fff; }
 
+    .primary-btn:disabled,
+    .ghost-btn:disabled,
+    .method-btn:disabled {
+      cursor: not-allowed;
+      opacity: .75;
+      transform: none !important;
+    }
+
+    .btn-spinner {
+      width: 15px;
+      height: 15px;
+      border: 2px solid rgba(245, 240, 232, .25);
+      border-top-color: #f5f0e8;
+      border-radius: 50%;
+      animation: btnSpin .7s linear infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes btnSpin {
+      to { transform: rotate(360deg); }
+    }
+
     .method-list {
       display: flex;
       flex-direction: column;
@@ -257,6 +311,18 @@
       border-color: var(--gold);
       transform: translateY(-1px);
       box-shadow: 0 14px 32px rgba(22,18,10,.08);
+    }
+
+    .method-btn:disabled {
+      border-color: var(--border);
+      background: rgba(255,255,255,.55);
+      color: var(--ink-muted);
+      box-shadow: none;
+    }
+
+    .method-btn:disabled .method-icon {
+      color: var(--ink-muted);
+      background: rgba(22,18,10,.06);
     }
 
     .method-icon {
@@ -339,43 +405,60 @@
       text-align: center;
     }
 
+    .timer {
+      --progress: 100%;
+      --timer-color: #78b73f;
+      width: 92px;
+      height: 92px;
+      position: relative;
+      display: grid;
+      place-items: center;
+      margin: -6px auto 14px;
+      border-radius: 50%;
+      background:
+        conic-gradient(var(--timer-color) var(--progress), rgba(120,183,63,.16) 0);
+      box-shadow: 0 10px 28px rgba(22,18,10,.08);
+    }
+
+    .timer::before {
+      content: '';
+      position: absolute;
+      inset: 11px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.9);
+      box-shadow: inset 0 0 0 1px rgba(22,18,10,.06);
+    }
+
+    .timer-value {
+      position: relative;
+      z-index: 1;
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: .04em;
+    }
+
     @media (max-width: 480px) {
+      .toast-box {
+        left: 14px;
+        right: 14px;
+        top: 14px;
+      }
+
+      .toast {
+        min-width: 0;
+        max-width: none;
+        width: 100%;
+      }
+
       .panel { padding: 28px 22px 24px; }
       .code-row { gap: 7px; }
       .panel-title { font-size: 1.5rem; }
     }
-
-      /* ── CUSTOM CURSOR ─── */
-    #cursor {
-      width: 10px; height: 10px;
-      background: var(--coral);
-      border-radius: 50%;
-      position: fixed;
-      pointer-events: none;
-      z-index: 9999;
-      transition: transform .15s ease;
-      transform: translate(-50%,-50%);
-    }
-    #cursor-ring {
-      width: 36px; height: 36px;
-      border: 1.5px solid var(--coral);
-      border-radius: 50%;
-      position: fixed;
-      pointer-events: none;
-      z-index: 9998;
-      transition: transform .35s ease, width .25s, height .25s, opacity .25s;
-      transform: translate(-50%,-50%);
-      opacity: .55;
-    }
-    body:hover #cursor { opacity: 1; }
   </style>
 </head>
 <body>
-
-    <!-- CURSOR -->
-        <div id="cursor"></div>
-        <div id="cursor-ring"></div>
-
+  <div id="toastBox" class="toast-box"></div>
   <canvas id="bg"></canvas>
 
   <main class="login-shell">
@@ -386,6 +469,7 @@
     </div>
 
     <section class="login-card" id="loginCard" data-step="0">
+      {% csrf_token %}
       <div class="slider">
         <div class="panel">
           <div class="panel-head">
@@ -399,7 +483,7 @@
               <label for="username">Username</label>
               <div class="field-wrap">
                 <i class="bi bi-person"></i>
-                <input id="username" type="text" autocomplete="username" placeholder="məsələn: leyla@novelora.az">
+                <input id="username" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="məsələn: leyla@novelora.az">
               </div>
             </div>
 
@@ -407,7 +491,7 @@
               <label for="password">Password</label>
               <div class="field-wrap">
                 <i class="bi bi-lock"></i>
-                <input id="password" type="password" autocomplete="current-password" placeholder="Şifrənizi daxil edin">
+                <input id="password" type="password" autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Şifrənizi daxil edin">
               </div>
             </div>
           </div>
@@ -416,7 +500,7 @@
             Next <i class="bi bi-arrow-right"></i>
           </button>
           <div class="status" id="loginStatus"></div>
-            <a href="{% url 'registration' %}">Registration</a>
+            <a href="{% url 'registration' %}">registration</a>
         </div>
 
         <div class="panel">
@@ -427,7 +511,7 @@
           </div>
 
           <div class="method-list">
-            <button class="method-btn" type="button" onclick="selectMethod('email')">
+            <button class="method-btn" id="emailMethodBtn" type="button" onclick="selectMethod('email')" disabled>
               <span class="method-icon"><i class="bi bi-envelope"></i></span>
               <span>
                 <span class="method-main" id="emailMethodText">email@example.com</span>
@@ -435,7 +519,7 @@
               </span>
             </button>
 
-            <button class="method-btn" type="button" onclick="selectMethod('totp')">
+            <button class="method-btn" id="totpMethodBtn" type="button" onclick="selectMethod('totp')" disabled>
               <span class="method-icon"><i class="bi bi-shield-lock"></i></span>
               <span>
                 <span class="method-main">TOTP kodu ilə təsdiq elə</span>
@@ -457,12 +541,15 @@
           </div>
 
           <div class="code-row" data-code-group="email">
-            <input class="code-input" inputmode="numeric" maxlength="1">
-            <input class="code-input" inputmode="numeric" maxlength="1">
-            <input class="code-input" inputmode="numeric" maxlength="1">
-            <input class="code-input" inputmode="numeric" maxlength="1">
-            <input class="code-input" inputmode="numeric" maxlength="1">
-            <input class="code-input" inputmode="numeric" maxlength="1">
+            <input class="code-input" inputmode="numeric" maxlength="1" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+            <input class="code-input" inputmode="numeric" maxlength="1" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+            <input class="code-input" inputmode="numeric" maxlength="1" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+            <input class="code-input" inputmode="numeric" maxlength="1" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+            <input class="code-input" inputmode="numeric" maxlength="1" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+            <input class="code-input" inputmode="numeric" maxlength="1" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+          </div>
+          <div class="timer" id="emailTimer" aria-label="Email kod vaxtı">
+            <span class="timer-value">05:00</span>
           </div>
 
           <div class="panel-actions">
@@ -482,12 +569,15 @@
           </div>
 
           <div class="code-row" data-code-group="totp">
-            <input class="code-input" inputmode="numeric" maxlength="1">
-            <input class="code-input" inputmode="numeric" maxlength="1">
-            <input class="code-input" inputmode="numeric" maxlength="1">
-            <input class="code-input" inputmode="numeric" maxlength="1">
-            <input class="code-input" inputmode="numeric" maxlength="1">
-            <input class="code-input" inputmode="numeric" maxlength="1">
+            <input class="code-input" inputmode="numeric" maxlength="1" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+            <input class="code-input" inputmode="numeric" maxlength="1" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+            <input class="code-input" inputmode="numeric" maxlength="1" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+            <input class="code-input" inputmode="numeric" maxlength="1" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+            <input class="code-input" inputmode="numeric" maxlength="1" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+            <input class="code-input" inputmode="numeric" maxlength="1" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+          </div>
+          <div class="timer" id="totpTimer" aria-label="TOTP kod vaxtı">
+            <span class="timer-value">05:00</span>
           </div>
 
           <div class="panel-actions">
@@ -498,29 +588,11 @@
           </div>
           <div class="status" id="totpStatus"></div>
         </div>
-
       </div>
-
     </section>
-
   </main>
 
   <script>
-      /* Custom cursor */
-const cur = document.getElementById('cursor');
-const ring = document.getElementById('cursor-ring');
-let mx = 0, my = 0, rx = 0, ry = 0;
-document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cur.style.left = mx+'px'; cur.style.top = my+'px'; });
-(function animRing() {
-rx += (mx - rx) * .14; ry += (my - ry) * .14;
-ring.style.left = rx+'px'; ring.style.top = ry+'px';
-requestAnimationFrame(animRing);
-})();
-document.querySelectorAll('a,button,.cat-item,.book-card,.news-card').forEach(el => {
-el.addEventListener('mouseenter', () => { ring.style.width='56px'; ring.style.height='56px'; ring.style.opacity='1'; cur.style.transform='translate(-50%,-50%) scale(1.6)'; });
-el.addEventListener('mouseleave', () => { ring.style.width='36px'; ring.style.height='36px'; ring.style.opacity='.55'; cur.style.transform='translate(-50%,-50%) scale(1)'; });
-});
-
     const canvas = document.getElementById('bg');
     const ctx = canvas.getContext('2d');
     let W;
@@ -528,6 +600,7 @@ el.addEventListener('mouseleave', () => { ring.style.width='36px'; ring.style.he
     let particles;
     let orbs;
     let startTime = null;
+    let lastFrameTime = 0;
 
     function resizeCanvas() {
       W = canvas.width = window.innerWidth;
@@ -536,23 +609,23 @@ el.addEventListener('mouseleave', () => { ring.style.width='36px'; ring.style.he
 
     function makeOrbs() {
       return [
-        { x: W * 0.14, y: H * 0.20, r: 380, hue: 38, sat: 92, lig: 68, speed: 0.00042, phase: 0 },
-        { x: W * 0.84, y: H * 0.76, r: 340, hue: 170, sat: 62, lig: 58, speed: 0.00034, phase: 1.2 },
-        { x: W * 0.70, y: H * 0.12, r: 260, hue: 18, sat: 86, lig: 64, speed: 0.00048, phase: 2.4 },
-        { x: W * 0.26, y: H * 0.88, r: 300, hue: 46, sat: 86, lig: 66, speed: 0.00038, phase: 0.8 }
+        { x: W * 0.14, y: H * 0.20, r: 380, hue: 38, sat: 92, lig: 68, speed: 0.00012, phase: 0 },
+        { x: W * 0.84, y: H * 0.76, r: 340, hue: 170, sat: 62, lig: 58, speed: 0.0001, phase: 1.2 },
+        { x: W * 0.70, y: H * 0.12, r: 260, hue: 18, sat: 86, lig: 64, speed: 0.00014, phase: 2.4 },
+        { x: W * 0.26, y: H * 0.88, r: 300, hue: 46, sat: 86, lig: 66, speed: 0.00011, phase: 0.8 }
       ];
     }
 
     function makeParticles() {
       const arr = [];
-      for (let i = 0; i < 90; i++) {
+      for (let i = 0; i < 18; i++) {
         arr.push({
           x: Math.random() * W,
           y: Math.random() * H,
           r: Math.random() * 2.8 + 0.8,
-          vx: (Math.random() - 0.5) * 0.55,
-          vy: -(Math.random() * 0.55 + 0.18),
-          alpha: Math.random() * 0.42 + 0.16,
+          vx: (Math.random() - 0.5) * 0.08,
+          vy: -(Math.random() * 0.08 + 0.03),
+          alpha: Math.random() * 0.24 + 0.1,
           hue: 34 + Math.random() * 28
         });
       }
@@ -565,7 +638,7 @@ el.addEventListener('mouseleave', () => { ring.style.width='36px'; ring.style.he
         const yBase = H * (0.30 + layer * 0.095);
         const amp = 26 + layer * 8;
         const freq = 0.007 - layer * 0.00045;
-        const speed = t * (0.00055 + layer * 0.00011);
+        const speed = t * (0.00014 + layer * 0.000025);
         ctx.moveTo(0, yBase);
 
         for (let x = 0; x <= W; x += 4) {
@@ -609,7 +682,7 @@ el.addEventListener('mouseleave', () => { ring.style.width='36px'; ring.style.he
       ];
 
       books.forEach((book, index) => {
-        const bob = Math.sin(t * 0.001 + index) * 8;
+        const bob = Math.sin(t * 0.00022 + index) * 4;
         ctx.save();
         ctx.translate(book.x, book.y + bob);
         ctx.rotate(book.rot);
@@ -630,6 +703,13 @@ el.addEventListener('mouseleave', () => { ring.style.width='36px'; ring.style.he
     }
 
     function draw(ts) {
+      if (ts - lastFrameTime < 66) {
+        requestAnimationFrame(draw);
+        return;
+      }
+
+      lastFrameTime = ts;
+
       if (!startTime) startTime = ts;
       const t = ts - startTime;
 
@@ -650,7 +730,6 @@ el.addEventListener('mouseleave', () => { ring.style.width='36px'; ring.style.he
         ctx.fill();
       });
 
-      drawDots(t);
       drawWaves(t);
       drawBooks(t);
 
@@ -687,6 +766,271 @@ el.addEventListener('mouseleave', () => { ring.style.width='36px'; ring.style.he
     const usernameInput = document.getElementById('username');
     const passwordInput = document.getElementById('password');
     const loginStatus = document.getElementById('loginStatus');
+    const LOGIN_START_URL = "/api/login/1/start/";
+    const LOGIN_VALIDATE_INFORMATION_URL = "/api/login/2/validate/information";
+    const LOGIN_VALIDATE_MFA_METHOD_URL = "/api/login/3/validate/mfa-method";
+    const LOGIN_SELECT_MFA_METHOD_URL = "/api/login/4/select/mfa-method";
+    const LOGIN_SEND_EMAIL_CODE_URL = "/api/login/5/send/email-code";
+    const LOGIN_CONFIRM_EMAIL_CODE_URL = "/api/login/6/confirm/email-code";
+    const LOGIN_CONFIRM_TOTP_CODE_URL = "/api/login/7/confirm/totp-code";
+    const LOGIN_FINISH_URL = "/api/login/8/finish";
+    const emailMethodBtn = document.getElementById('emailMethodBtn');
+    const totpMethodBtn = document.getElementById('totpMethodBtn');
+
+    let loginAccessToken = null;
+    let timerInterval = null;
+    let selectedMfaMethod = null;
+
+    function getCsrfToken() {
+      const csrfInput = document.querySelector('[name=csrfmiddlewaretoken]');
+      return csrfInput ? csrfInput.value : '';
+    }
+
+    function formatErrorValue(value) {
+      if (Array.isArray(value)) return value.map(formatErrorValue).join(' ');
+      if (value && typeof value === 'object') return getErrorMessage(value);
+      return String(value || '');
+    }
+
+    function getErrorMessage(data) {
+      if (!data) return 'Xəta baş verdi.';
+      if (typeof data === 'string') return data;
+      if (data.message) return formatErrorValue(data.message);
+      if (data.detail) return formatErrorValue(data.detail);
+      if (data.error) return formatErrorValue(data.error);
+
+      if (typeof data === 'object') {
+        const messages = Object.entries(data)
+          .map(([key, value]) => {
+            const message = formatErrorValue(value);
+            return key === 'non_field_errors' ? message : `${key}: ${message}`;
+          })
+          .filter(Boolean);
+
+        if (messages.length) return messages.join(' ');
+      }
+
+      return 'Xəta baş verdi.';
+    }
+    async function parseResponseData(response) {
+      const contentType = response.headers.get('content-type') || '';
+
+      if (contentType.includes('application/json')) {
+        return await response.json();
+      }
+
+      const text = await response.text();
+      const shortText = text.replace(/\s+/g, ' ').trim().slice(0, 120);
+
+      throw new Error(
+        `Backend JSON qaytarmadı (${response.status}). Cavab: ${shortText || 'boş cavab'}`
+      );
+    }
+
+    async function startLoginSession() {
+      loginAccessToken = null;
+      selectedMfaMethod = null;
+
+      const response = await fetch(LOGIN_START_URL, {
+        method: 'GET',
+      });
+
+      const data = await parseResponseData(response);
+
+      if (!response.ok) {
+        throw new Error(getErrorMessage(data));
+      }
+
+      loginAccessToken = data.access_token;
+
+      if (!loginAccessToken) {
+        throw new Error('Login token backend-dən gəlmədi.');
+      }
+
+      return data;
+    }
+
+    async function postData(url, payload = {}) {
+      if (!loginAccessToken) {
+        throw new Error('Token yoxdur. Səhifəni yeniləyib yenidən yoxlayın.');
+      }
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': getCsrfToken(),
+          'Authorization': `Bearer ${loginAccessToken}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await parseResponseData(response);
+
+      if (!response.ok || data === false || data.ok === false) {
+        throw new Error(getErrorMessage(data));
+      }
+
+      return data;
+    }
+
+    async function getData(url, params = {}) {
+      if (!loginAccessToken) {
+        throw new Error('Token yoxdur. Səhifəni yeniləyib yenidən yoxlayın.');
+      }
+
+      const query = new URLSearchParams(params).toString();
+      const fullUrl = query ? `${url}?${query}` : url;
+
+      const response = await fetch(fullUrl, {
+        method: 'GET',
+        headers: {
+          'X-CSRFToken': getCsrfToken(),
+          'Authorization': `Bearer ${loginAccessToken}`,
+        },
+      });
+
+      const data = await parseResponseData(response);
+
+      if (!response.ok || data === false || data.ok === false) {
+        throw new Error(getErrorMessage(data));
+      }
+
+      return data;
+    }
+
+    function setButtonLoading(button, isLoading) {
+      if (!button) return;
+
+      if (isLoading) {
+        if (!button.dataset.originalHtml) {
+          button.dataset.originalHtml = button.innerHTML;
+        }
+
+        button.disabled = true;
+        button.innerHTML = `
+          <span class="btn-spinner"></span>
+          <span>Y\u00fckl\u0259nir...</span>
+        `;
+        return;
+      }
+
+      button.disabled = false;
+
+      if (button.dataset.originalHtml) {
+        button.innerHTML = button.dataset.originalHtml;
+      }
+    }
+
+    function showToast(message, type = 'error') {
+      const toastBox = document.getElementById('toastBox');
+      const toast = document.createElement('div');
+
+      toast.className = `toast ${type === 'success' ? 'success' : ''}`;
+      toast.textContent = message;
+
+      toastBox.appendChild(toast);
+
+      setTimeout(() => {
+        toast.remove();
+      }, 10000);
+    }
+
+    function setMfaMethodAvailability(data) {
+      const emailEnabled = data.email === true;
+      const totpEnabled = data.totp === true;
+      const emailText = document.getElementById('emailMethodText');
+      const emailTarget = document.getElementById('emailTarget');
+
+      emailMethodBtn.disabled = !emailEnabled;
+      totpMethodBtn.disabled = !totpEnabled;
+
+      if (emailEnabled) {
+        const maskedEmail = data.masked_email || getEmail();
+
+        emailText.textContent = maskedEmail;
+        emailText.style.display = '';
+        emailTarget.textContent = maskedEmail;
+      } else {
+        emailText.textContent = '';
+        emailText.style.display = 'none';
+        emailTarget.textContent = '';
+      }
+
+      if (!emailEnabled && !totpEnabled) {
+        throw new Error('Aktiv MFA metodu tapılmadı.');
+      }
+    }
+
+    function setCodeInputsDisabled(group, disabled) {
+      document.querySelectorAll(`[data-code-group="${group}"] .code-input`).forEach(input => {
+        input.disabled = disabled;
+
+        if (disabled) {
+          input.value = '';
+        }
+      });
+    }
+
+    function formatTime(seconds) {
+      const minutes = String(Math.floor(seconds / 60)).padStart(2, '0');
+      const rest = String(seconds % 60).padStart(2, '0');
+
+      return `${minutes}:${rest}`;
+    }
+
+    function updateTimerDisplay(timer, secondsLeft) {
+      const totalSeconds = 300;
+      const ratio = Math.max(0, secondsLeft / totalSeconds);
+      const progress = `${ratio * 100}%`;
+      const hue = 4 + (95 - 4) * ratio;
+
+      timer.style.setProperty('--progress', progress);
+      timer.style.setProperty('--angle', `${270 + ratio * 360}deg`);
+      timer.style.setProperty('--timer-color', `hsl(${hue}, 64%, 44%)`);
+      timer.querySelector('.timer-value').textContent = formatTime(secondsLeft);
+    }
+
+    function startTimer(group) {
+      clearInterval(timerInterval);
+
+      let secondsLeft = 300;
+      const timer = document.getElementById(`${group}Timer`);
+      const status = document.getElementById(`${group}Status`);
+
+      setCodeInputsDisabled(group, false);
+      updateTimerDisplay(timer, secondsLeft);
+
+      timerInterval = setInterval(() => {
+        secondsLeft -= 1;
+        updateTimerDisplay(timer, secondsLeft);
+
+        if (secondsLeft <= 0) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+          setCodeInputsDisabled(group, true);
+          status.textContent = 'Kodun vaxt\u0131 bitdi. Yenid\u0259n c\u0259hd edin.';
+        }
+      }, 1000);
+    }
+
+    function stopTimer() {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+
+    async function finishLogin(status) {
+      const data = await postData(LOGIN_FINISH_URL, {});
+      const successMessage = data.message || 'Hesaba giriş uğurludur.';
+
+      stopTimer();
+      status.style.color = 'var(--teal)';
+      status.textContent = successMessage;
+      showToast(successMessage, 'success');
+
+      const redirectUrl = data.redirect_url || data.next || data.url || '/';
+      window.location.href = redirectUrl;
+    }
 
     function setStep(step) {
       card.dataset.step = String(step);
@@ -699,34 +1043,128 @@ el.addEventListener('mouseleave', () => { ring.style.width='36px'; ring.style.he
       }, 260);
     }
 
+    function runAfterStepShown(callback) {
+      setTimeout(() => {
+        requestAnimationFrame(callback);
+      }, 260);
+    }
+
+    async function sendEmailCode() {
+      const status = document.getElementById('emailStatus');
+
+      try {
+        status.style.color = 'var(--ink-muted)';
+        status.textContent = 'Email kodu g\u00f6nd\u0259rilir...';
+
+        const emailData = await postData(LOGIN_SEND_EMAIL_CODE_URL, {});
+        const sentEmail = emailData.email || emailData.masked_email;
+
+        if (sentEmail) {
+          document.getElementById('emailTarget').textContent = sentEmail;
+        }
+
+        status.style.color = 'var(--teal)';
+        status.textContent = emailData.message || 'Email kodu g\u00f6nd\u0259rildi.';
+      } catch (error) {
+        showToast(error.message);
+        status.style.color = 'var(--coral)';
+        status.textContent = error.message;
+      }
+    }
+
     function getEmail() {
       const username = usernameInput.value.trim();
       if (username.includes('@')) return username;
       return `${username || 'user'}@novelora.az`;
     }
 
-    function goToMethods() {
+    async function goToMethods() {
       const username = usernameInput.value.trim();
-      const password = passwordInput.value.trim();
+      const password = passwordInput.value;
+      const button = document.querySelector('[onclick="goToMethods()"]');
 
       if (!username || !password) {
         loginStatus.textContent = 'Username və password daxil edin.';
         return;
       }
 
-      const email = getEmail();
-      document.getElementById('emailMethodText').textContent = email;
-      document.getElementById('emailTarget').textContent = email;
-      setStep(1);
+      setButtonLoading(button, true);
+
+      try {
+        await startLoginSession();
+
+        const data = await postData(LOGIN_VALIDATE_INFORMATION_URL, {
+          username,
+          password,
+        });
+
+        if (data.password !== true) {
+          throw new Error(data.message || 'Password təsdiqlənmədi.');
+        }
+
+        const mfaMethods = await getData(LOGIN_VALIDATE_MFA_METHOD_URL);
+
+        setMfaMethodAvailability(mfaMethods);
+        setStep(1);
+      } catch (error) {
+        showToast(error.message);
+        loginStatus.textContent = error.message;
+      } finally {
+        setButtonLoading(button, false);
+      }
     }
 
-    function selectMethod(method) {
-      if (method === 'email') setStep(2);
-      if (method === 'totp') setStep(3);
+    async function selectMethod(method) {
+      const button = method === 'email' ? emailMethodBtn : totpMethodBtn;
+
+      if (button.disabled) return;
+
+      setButtonLoading(button, true);
+
+      try {
+        const data = await postData(LOGIN_SELECT_MFA_METHOD_URL, {
+          mfa_method: method,
+        });
+        const selectedMethod = data.mfa_method || method;
+        selectedMfaMethod = selectedMethod;
+
+        if (selectedMethod !== method) {
+          throw new Error('MFA metodu düzgün seçilmədi.');
+        }
+
+        if (selectedMethod === 'email') {
+          const email = data.email || data.masked_email || document.getElementById('emailTarget').textContent;
+
+          if (email) {
+            document.getElementById('emailTarget').textContent = email;
+          }
+
+          setStep(2);
+          startTimer('email');
+          runAfterStepShown(sendEmailCode);
+
+          return;
+        }
+
+        if (selectedMethod === 'totp') {
+          setStep(3);
+          startTimer('totp');
+          return;
+        }
+
+        throw new Error('MFA metodu tanınmadı.');
+      } catch (error) {
+        showToast(error.message);
+      } finally {
+        setButtonLoading(button, false);
+      }
     }
 
     function clearStatuses() {
-      document.querySelectorAll('.status').forEach(item => item.textContent = '');
+      document.querySelectorAll('.status').forEach(item => {
+        item.textContent = '';
+        item.style.color = 'var(--coral)';
+      });
     }
 
     function focusCodeGroup(group) {
@@ -740,17 +1178,50 @@ el.addEventListener('mouseleave', () => { ring.style.width='36px'; ring.style.he
         .join('');
     }
 
-    function verifyCode(group) {
+    function isConfirmed(data) {
+      return data === true || data.code === true || data.totp_code === true || data.ok === true;
+    }
+
+    async function verifyCode(group) {
       const code = getCode(group);
       const status = document.getElementById(`${group}Status`);
+      const button = document.querySelector(`[onclick="verifyCode('${group}')"]`);
 
       if (code.length !== 6) {
         status.textContent = '6 rəqəmli kodu tam daxil edin.';
         return;
       }
 
-      status.style.color = 'var(--teal)';
-      status.textContent = 'Kod qəbul edildi.';
+      setButtonLoading(button, true);
+
+      try {
+        if (group === 'email') {
+          const emailData = await postData(LOGIN_CONFIRM_EMAIL_CODE_URL, {
+            code,
+          });
+
+          if (!isConfirmed(emailData)) {
+            throw new Error(emailData.message || 'Email kodu təsdiqlənmədi.');
+          }
+        }
+
+        if (group === 'totp') {
+          const totpData = await postData(LOGIN_CONFIRM_TOTP_CODE_URL, {
+            totp_code: code,
+          });
+
+          if (!isConfirmed(totpData)) {
+            throw new Error(totpData.message || 'TOTP kodu təsdiqlənmədi.');
+          }
+        }
+
+        await finishLogin(status);
+      } catch (error) {
+        showToast(error.message);
+        status.textContent = error.message;
+      } finally {
+        setButtonLoading(button, false);
+      }
     }
 
     document.querySelectorAll('.code-row').forEach(row => {

@@ -3,6 +3,7 @@ from django.http import Http404, HttpRequest
 from django.shortcuts import render
 from django.core.cache import cache
 from utils.ip_address import get_ip
+from django.contrib.auth import logout
 
 def home(request):
     return render(request, 'index/index.html')
@@ -21,3 +22,7 @@ def register(request: HttpRequest):
 
 def page_404(request: HttpRequest):
     return render(request, "404.html",status=200)
+
+def logout_account(request: HttpRequest):
+    logout(request)
+    return render(request, 'index/index.html')

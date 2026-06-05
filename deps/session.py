@@ -1,4 +1,5 @@
 from crud.auth.registration import registration_crud
+from crud.auth.login import login_crud
 from crud.auth.base import CRUDSession
 from utils.jwt_token import decode_access_token
 from utils.ip_address import get_ip
@@ -42,6 +43,10 @@ class SessionTokenAuthentication(BaseAuthentication):
 class RegistrationAuthentication:
     def __new__(cls):
         return SessionTokenAuthentication(registration_crud)
+
+class LoginAuthentication:
+    def __new__(cls):
+        return SessionTokenAuthentication(login_crud)
 
 
 

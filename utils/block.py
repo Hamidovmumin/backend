@@ -4,6 +4,7 @@ from django.http import Http404
 from rest_framework.throttling import BaseThrottle,AnonRateThrottle
 from rest_framework.exceptions import Throttled
 from django.conf import settings
+from rest_framework.exceptions import ValidationError
 from  django.shortcuts import reverse
 
 class Throttle(BaseThrottle):
@@ -36,3 +37,11 @@ class Throttle(BaseThrottle):
     def wait(self):
         return settings.ENDPOINT_LIMIT_BLOCK_TIME
 
+BLOCK_DURATION = {
+    3:5,
+    4:15,
+    5:30
+}
+
+def block_time(count:int)->ValidationError:
+    raise ValidationError(f'Hesabınız müvəqqəti bloklanıb.{BLOCK_DURATION[count]} dəqiqə sonra yənidən yoxlayın')

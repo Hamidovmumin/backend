@@ -29,6 +29,7 @@ urlpatterns = [
 
     path('', include('home.urls')),
     path('api/registration/', include('registration.urls')),
+    path('api/login/', include('login.urls')),
     path('accounts/', include('accounts.urls')),
     path('api/accounts/', include('accounts.api_urls')),
 

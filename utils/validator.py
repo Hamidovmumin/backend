@@ -20,7 +20,7 @@ def validate_password_policy(password:str)->str:
 
     # Check symbol
     if not re.search(r'[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\\/`~;]', password):
-        errors.append("Parolda (!@#$%^&* etc.) və s. tipli simvollardan istifadə olunmalıdır!")
+        errors.append("Parolda (!@#$%^&*. etc.) və s. tipli simvollardan istifadə olunmalıdır!")
 
     if errors:
         raise ValueError(' '.join(errors))
