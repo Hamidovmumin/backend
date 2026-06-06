@@ -10,10 +10,10 @@ class LoginInformationRequest(serializers.Serializer):
         errors = {}
 
         if not attrs['username']:
-            errors['username'] = 'username daxil edin!'
+            errors['username'] = ['username daxil edin!']
 
         if not attrs['password']:
-            errors['password'] = 'şifrəyi daxil edin!'
+            errors['password'] = ['şifrəyi daxil edin!']
 
         if errors:
             raise ValidationError(errors)
