@@ -95,7 +95,8 @@
     }
 
     .login-shell {
-      width: min(460px, 100%);
+      width: 100%;
+      max-width: 460px;
       position: relative;
       z-index: 1;
       margin: 0 auto;
@@ -137,6 +138,8 @@
     }
 
     .login-card {
+      width: 100%;
+      max-width: 100%;
       overflow: hidden;
       background: rgba(255,255,255,.84);
       border: 1px solid var(--border);
@@ -160,6 +163,7 @@
       width: 25%;
       flex: 0 0 25%;
       max-width: 25%;
+      min-width: 0;
       min-height: 392px;
       padding: 34px 34px 30px;
     }
@@ -200,6 +204,7 @@
       color: var(--ink-muted);
       font-size: 13px;
       line-height: 1.55;
+      overflow-wrap: anywhere;
     }
 
     .field-group {
@@ -243,6 +248,7 @@
     }
 
     .field-wrap input {
+      min-width: 0;
       width: 100%;
       border: none;
       outline: none;
@@ -255,6 +261,7 @@
     .primary-btn,
     .method-btn,
     .ghost-btn {
+      max-width: 100%;
       width: 100%;
       min-height: 48px;
       border-radius: 999px;
@@ -486,12 +493,51 @@
       }
 
       .login-shell {
-        width: min(100%, 430px);
+        width: calc(100vw - 24px);
+        max-width: 430px;
+        margin-left: auto;
+        margin-right: auto;
       }
 
-      .panel { padding: 28px 22px 24px; }
+      .login-card {
+        border-radius: 18px;
+      }
+
+      .panel {
+        padding: 26px 18px 24px;
+      }
+
+      .panel-text {
+        font-size: 12px;
+      }
+
       .code-row { gap: 7px; }
       .panel-title { font-size: 1.5rem; }
+    }
+
+    @media (max-width: 380px) {
+      .login-shell {
+        width: calc(100vw - 16px);
+      }
+
+      body {
+        padding-left: 8px;
+        padding-right: 8px;
+      }
+
+      .panel {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      .field-wrap {
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+
+      .panel-title {
+        font-size: 1.38rem;
+      }
     }
   </style>
 </head>
@@ -521,7 +567,7 @@
               <label for="username">Username</label>
               <div class="field-wrap">
                 <i class="bi bi-person"></i>
-                <input id="username" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="məsələn: memmedov01">
+                <input id="username" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="məsələn: leyla@novelora.az">
               </div>
             </div>
 
