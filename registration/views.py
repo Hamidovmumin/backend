@@ -258,7 +258,7 @@ class ValidatePassword(APIView):
                 'message': "Daxil edilmiş parollar eyni deyildir!"
             })
 
-        hashed_password = make_password(password)
+        hashed_password = get_password_hash(password)
         print("hash:", time.perf_counter() - t0)
 
         registration_crud.update(
