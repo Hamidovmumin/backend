@@ -4,9 +4,8 @@ from crud.auth.base import CRUDSession
 from utils.jwt_token import decode_access_token
 from utils.ip_address import get_ip
 
-from rest_framework.authentication import BaseAuthentication
+from rest_framework.authentication import BaseAuthentication,BasicAuthentication
 from rest_framework.exceptions import AuthenticationFailed
-
 
 class SessionTokenAuthentication(BaseAuthentication):
     def __init__(self, crud: CRUDSession):

@@ -32,6 +32,8 @@ import pyotp
 from django.contrib.auth import authenticate, login, logout
 from utils.masked_email import masked_email
 from rest_framework.permissions import IsAuthenticated
+from core.security import verify_password
+import time
 
 @extend_schema(auth=[],tags=['Login'])
 class StartSessionView(APIView):
@@ -64,6 +66,7 @@ class ValidateInformation(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request: Request):
+        t0 = time.perf_counter()
         login_session = request.user
 
         serializer = LoginInformationRequest(data=request.data)
@@ -83,7 +86,7 @@ class ValidateInformation(APIView):
         if user.block_time and user.block_time > datetime.now(timezone.utc):
             raise block_time(count=count)
 
-        if check_password(password, user.password):
+        if verify_password(password, user.password):
             response_serializer = LoginInformationResponse(
                 instance={
                     'username': user.username,
@@ -91,6 +94,7 @@ class ValidateInformation(APIView):
                 }
             )
             login_crud.update(db_obj=login_session,user_id=user.id,password_is_validated=True)
+            print("success:", time.perf_counter() - t0)
             return Response(response_serializer.data)
 
         else:
