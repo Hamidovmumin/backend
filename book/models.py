@@ -3,11 +3,13 @@ from category.models import Category
 from models.base import BaseDatabaseModel
 from choices.book_choices import Currency
 from decimal import Decimal
+from book.storages import PublicMediaStorage,PrivateMediaStorage
 
 class Book(BaseDatabaseModel):
     book_name = models.CharField(max_length=100)
     slug = models.SlugField(max_length=100, unique=True)
-    image = models.ImageField(upload_to='books/')
+    image = models.ImageField(upload_to='books/',storage=PublicMediaStorage())
+    pdf_file = models.FileField(upload_to='books_pdf/',storage=PrivateMediaStorage(),null=True,blank=True)
     description = models.TextField()
     page_size = models.IntegerField(null=True, blank=True)
     language = models.CharField(max_length=50,null=True, blank=True)

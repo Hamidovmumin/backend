@@ -32,6 +32,7 @@ urlpatterns = [
     path('api/login/', include('login.urls')),
     path('accounts/', include('accounts.urls')),
     path('api/accounts/', include('accounts.api_urls')),
+    path('api/books/', include('book.urls')),
 
 
     # drf_spectacular URL-ləri

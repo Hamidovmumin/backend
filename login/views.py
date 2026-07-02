@@ -75,7 +75,9 @@ class ValidateInformation(APIView):
         username = serializer.validated_data.get('username')
         password = serializer.validated_data.get('password')
 
+        t1 = time.perf_counter()
         user = user_crud.get_by_username(username=username)
+        print("db:", time.perf_counter() - t1)
         if not user:
             raise ValidationError('User not found')
 
@@ -86,7 +88,9 @@ class ValidateInformation(APIView):
         if user.block_time and user.block_time > datetime.now(timezone.utc):
             raise block_time(count=count)
 
+        t2 = time.perf_counter()
         if verify_password(password, user.password):
+            print("verify:", time.perf_counter() - t2)
             response_serializer = LoginInformationResponse(
                 instance={
                     'username': user.username,
@@ -94,11 +98,13 @@ class ValidateInformation(APIView):
                 }
             )
             login_crud.update(db_obj=login_session,user_id=user.id,password_is_validated=True)
-            print("success:", time.perf_counter() - t0)
+
             return Response(response_serializer.data)
 
         else:
             raise handle_failed_login_attempt(account = user)
+
+
 
 @extend_schema(
     auth=[{"BearerAuth": []}],

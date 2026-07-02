@@ -26,3 +26,6 @@ def page_404(request: HttpRequest):
 def logout_account(request: HttpRequest):
     logout(request)
     return render(request, 'index/index.html')
+
+def books_all_page(request: HttpRequest):
+    return render(request, 'books/books_all.html')

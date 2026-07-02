@@ -119,6 +119,7 @@ class ValidateUsername(APIView):
 )
 class ValidateEmail(APIView):
     throttle_classes = [Throttle]
+    throttle_group = 'registration'
     authentication_classes = [RegistrationAuthentication]
     permission_classes = [AllowAny]
 
@@ -159,6 +160,7 @@ class ValidateEmail(APIView):
 )
 class ValidateTOTP(APIView):
     throttle_classes = [Throttle]
+    throttle_group = 'registration'
     authentication_classes = [RegistrationAuthentication]
     permission_classes = [AllowAny]
 
@@ -200,6 +202,7 @@ class ValidateTOTP(APIView):
 )
 class ConfirmTOTP(APIView):
     throttle_classes = [Throttle]
+    throttle_group = 'registration'
     authentication_classes = [RegistrationAuthentication]
     permission_classes = [AllowAny]
 
@@ -237,6 +240,7 @@ class ConfirmTOTP(APIView):
 )
 class ValidatePassword(APIView):
     throttle_classes = [Throttle]
+    throttle_group = 'registration'
     authentication_classes = [RegistrationAuthentication]
     permission_classes = [AllowAny]
 
@@ -284,6 +288,7 @@ class ValidatePassword(APIView):
 
 class CreateUser(APIView):
     throttle_classes = [Throttle]
+    throttle_group = 'registration'
     authentication_classes = [RegistrationAuthentication]
     permission_classes = [AllowAny]
 
@@ -327,6 +332,7 @@ class CreateUser(APIView):
 )
 class SendEmailSMS(APIView):
     throttle_classes = [Throttle]
+    throttle_group = 'registration'
     authentication_classes = [RegistrationAuthentication]
     permission_classes = [AllowAny]
 

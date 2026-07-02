@@ -37,6 +37,8 @@ class BookAdmin(admin.ModelAdmin):
         "description",
     )
 
+    autocomplete_fields = ['category']
+
     prepopulated_fields = {"slug": ("book_name",)}
 
     filter_horizontal = (
@@ -58,6 +60,7 @@ class BookAdmin(admin.ModelAdmin):
                 "slug",
                 "description",
                 "image",
+                'pdf_file',
                 "category",
                 "tag",
             )
