@@ -40,6 +40,8 @@ class BookList(generics.ListAPIView):
     serializer_class = BookListSerializer
     permission_classes = [permissions.AllowAny]
     pagination_class = BookCursorPagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = BookFilter
 
 
 @extend_schema(
@@ -65,11 +67,23 @@ class CategoryTreeView(APIView):
             name='category',
             type=str,
             location=OpenApiParameter.QUERY,
-            description='Category name (e.g. Fiction)'
-        )
+            description='Category slug (e.g. klassik-roman)'
+        ),
+        OpenApiParameter(
+            name='min_price',
+            type=float,
+            location=OpenApiParameter.QUERY,
+            description='Minimum price'
+        ),
+        OpenApiParameter(
+            name='max_price',
+            type=float,
+            location=OpenApiParameter.QUERY,
+            description='Maximum price'
+        ),
     ]
 )
-class GetCategoryBookAll(generics.ListAPIView):
+class GetCategoryBooks(generics.ListAPIView):
     queryset = Book.objects.all().order_by('-id').select_related('category').prefetch_related(
         Prefetch(
             'book_authors',
@@ -79,4 +93,5 @@ class GetCategoryBookAll(generics.ListAPIView):
     )
     serializer_class = BookListSerializer
     filter_backends = [DjangoFilterBackend]
+    pagination_class = BookCursorPagination
     filterset_class = BookFilter

@@ -431,19 +431,36 @@
       cursor: pointer;
     }
 
+    .price-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .price-search-btn,
     .reset-btn {
       width: 100%;
-      margin-top: 16px;
       padding: 10px;
       border: 1px solid var(--border-hover);
       border-radius: 10px;
-      background: transparent;
-      color: var(--ink-muted);
       font-family: var(--sans);
       font-size: 13px;
       font-weight: 500;
       cursor: pointer;
       transition: .18s;
+    }
+
+    .price-search-btn {
+      background: var(--gold);
+      color: #fff;
+      border-color: var(--gold);
+    }
+    .price-search-btn:hover { filter: brightness(.95); transform: translateY(-1px); }
+
+    .reset-btn {
+      background: transparent;
+      color: var(--ink-muted);
     }
     .reset-btn:hover { color: var(--ink); border-color: var(--coral); color: var(--coral); }
 
@@ -613,6 +630,15 @@
     }
     .empty.show { display: block; }
     .empty i { font-size: 2.5rem; display: block; margin-bottom: 12px; opacity: .4; }
+    .empty.loading i {
+      animation: spin .9s linear infinite;
+      color: var(--gold);
+      opacity: .9;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
 
     .load-more-wrap {
       display: flex;
@@ -797,9 +823,14 @@
               <div class="range-fill" id="rangeFill"></div>
             </div>
           </div>
-          <button class="reset-btn" id="resetBtn" type="button">
-            <i class="bi bi-arrow-counterclockwise"></i> Filteri sıfırla
-          </button>
+          <div class="price-actions">
+            <button class="price-search-btn" id="priceSearchBtn" type="button">
+              <i class="bi bi-search"></i> Axtar
+            </button>
+            <button class="reset-btn" id="resetBtn" type="button">
+              <i class="bi bi-arrow-counterclockwise"></i> Sıfırla
+            </button>
+          </div>
         </div>
       </div>
     </aside>
@@ -1074,6 +1105,7 @@
     const maxRange  = document.getElementById('maxRange');
     const minInput  = document.getElementById('minInput');
     const maxInput  = document.getElementById('maxInput');
+    const priceSearchBtn = document.getElementById('priceSearchBtn');
     const resetBtn  = document.getElementById('resetBtn');
     let catBtns = [];
     let subBtns = [];
@@ -1082,6 +1114,7 @@
     let isLoadingBooks = false;
     let booksRequestId = 0;
     let subcategoryParentMap = {};
+    let categoryBySlug = {};
 
     bookGrid.querySelectorAll('.book-item').forEach(book => book.remove());
 
@@ -1091,11 +1124,12 @@
 
     function getUrlCategory() {
       const params = new URLSearchParams(window.location.search);
-      return slugText(params.get('category') || 'all') || 'all';
+      const pathMatch = window.location.pathname.match(/\/books\/catigories\/([^/]+)/i);
+      return slugText((pathMatch && decodeURIComponent(pathMatch[1])) || params.get('category') || 'all') || 'all';
     }
 
     function updateBooksUrl(slug, replace = false) {
-      const target = slug === 'all' ? '/books/' : `/books/?category=${encodeURIComponent(slug)}`;
+      const target = slug === 'all' ? '/books/' : `/books/catigories/${encodeURIComponent(slug)}`;
       try {
         history[replace ? 'replaceState' : 'pushState']({ category: slug }, '', target);
       } catch (error) {
@@ -1103,15 +1137,41 @@
       }
     }
 
-    function categoryBooksUrl(slug) {
-      if (slug === 'all') return API_URL;
-      const url = new URL(CATEGORY_BOOKS_API_URL);
-      url.searchParams.set('category', slug);
+    function currentCategorySlug() {
+      return state.subcategory !== 'all' ? state.subcategory : state.category;
+    }
+
+    function booksUrl(slug = currentCategorySlug()) {
+      const hasCategory = slug && slug !== 'all';
+      const url = new URL(hasCategory ? CATEGORY_BOOKS_API_URL : API_URL);
+      if (hasCategory) url.searchParams.set('category', slug);
+      url.searchParams.set('min_price', state.minPrice);
+      url.searchParams.set('max_price', state.maxPrice);
       return url.toString();
     }
 
     function clearBooks() {
       getBooks().forEach(book => book.remove());
+    }
+
+    function setEmptyState(type = 'empty') {
+      const states = {
+        loading: {
+          icon: 'bi-arrow-repeat',
+          text: 'Yüklənir...'
+        },
+        empty: {
+          icon: 'bi-search',
+          text: 'Axtarışa aid kitab tapılmadı.'
+        },
+        error: {
+          icon: 'bi-exclamation-circle',
+          text: 'Kitablar yüklənmədi.'
+        }
+      };
+      const stateConfig = states[type] || states.empty;
+      emptyState.classList.toggle('loading', type === 'loading');
+      emptyState.innerHTML = `<i class="bi ${stateConfig.icon}"></i>${stateConfig.text}`;
     }
 
     function slugText(value) {
@@ -1132,6 +1192,8 @@
     }
 
     function labelText(slug) {
+      if (categoryBySlug[slug] && categoryBySlug[slug].name) return categoryBySlug[slug].name;
+
       const labels = {
         'all': 'Hamısı',
         'romanlar': 'Roman',
@@ -1172,28 +1234,71 @@
       return icons[slug] || 'bi-folder2-open';
     }
 
+    function normalizeCategoryNode(category, parentSlug = null) {
+      const slug = slugText(category && (category.slug || category.name || category));
+      const name = (category && category.name) || labelText(slug);
+      return {
+        id: category && category.id,
+        name,
+        slug,
+        parentSlug,
+        children: Array.isArray(category && category.children)
+          ? category.children.map(child => normalizeCategoryNode(child, slug))
+          : []
+      };
+    }
+
+    function normalizeCategories(categories) {
+      if (categories && !Array.isArray(categories)) {
+        const nestedCategories = categories.results || categories.data || categories.categories;
+        if (Array.isArray(nestedCategories)) {
+          return normalizeCategories(nestedCategories);
+        }
+      }
+
+      if (Array.isArray(categories)) {
+        return categories.map(category => normalizeCategoryNode(category));
+      }
+
+      return Object.entries(categories || {}).map(([parent, children]) => {
+        const parentSlug = slugText(parent);
+        return {
+          id: null,
+          name: labelText(parentSlug),
+          slug: parentSlug,
+          parentSlug: null,
+          children: (children || []).map(child => normalizeCategoryNode(child, parentSlug))
+        };
+      });
+    }
+
     function buildCategoryMaps(categories) {
       subcategoryParentMap = {};
-      Object.entries(categories).forEach(([parent, children]) => {
-        const parentSlug = slugText(parent);
-        subcategoryParentMap[parentSlug] = parentSlug;
-        (children || []).forEach(child => {
-          subcategoryParentMap[slugText(child)] = parentSlug;
+      categoryBySlug = {};
+      categories.forEach(parent => {
+        subcategoryParentMap[parent.slug] = parent.slug;
+        categoryBySlug[parent.slug] = parent;
+        parent.children.forEach(child => {
+          subcategoryParentMap[child.slug] = parent.slug;
+          categoryBySlug[child.slug] = child;
         });
       });
     }
 
-    function createCategoryButton(slug, isAll = false, hasChildren = true) {
+    function createCategoryButton(category, isAll = false) {
+      const slug = isAll ? 'all' : category.slug;
+      const hasChildren = !isAll && category.children.length > 0;
       const button = document.createElement('button');
       button.className = `cat-btn${isAll ? ' active' : ''}`;
       button.dataset.category = slug;
+      if (!isAll && category.id) button.dataset.categoryId = category.id;
       if (!isAll && !hasChildren) button.dataset.direct = 'true';
       button.type = 'button';
       if (!isAll && hasChildren) button.setAttribute('aria-expanded', 'false');
 
       const label = document.createElement('span');
       label.className = 'lbl-wrap';
-      label.innerHTML = `<i class="bi ${isAll ? 'bi-grid-fill' : categoryIcon(slug)} icon"></i> ${labelText(slug)}`;
+      label.innerHTML = `<i class="bi ${isAll ? 'bi-grid-fill' : categoryIcon(slug)} icon"></i> ${isAll ? labelText(slug) : category.name}`;
 
       const icon = document.createElement('i');
       icon.className = isAll
@@ -1211,32 +1316,30 @@
       return button;
     }
 
-    function createSubcategoryButton(parentSlug, childSlug) {
+    function createSubcategoryButton(parentSlug, child) {
       const button = document.createElement('button');
       button.className = 'sub-btn';
       button.dataset.category = parentSlug;
-      button.dataset.subcategory = childSlug;
+      button.dataset.subcategory = child.slug;
+      if (child.id) button.dataset.categoryId = child.id;
       button.type = 'button';
-      button.textContent = `· ${labelText(childSlug)}`;
+      button.textContent = `· ${child.name}`;
       return button;
     }
 
     function renderCategories(categories) {
       categoryList.innerHTML = '';
-      categoryList.appendChild(createCategoryButton('all', true));
+      categoryList.appendChild(createCategoryButton(null, true));
 
-      Object.entries(categories).forEach(([parent, children]) => {
-        const parentSlug = slugText(parent);
-        const subcategories = children || [];
-
-        categoryList.appendChild(createCategoryButton(parentSlug, false, subcategories.length > 0));
+      categories.forEach(parent => {
+        categoryList.appendChild(createCategoryButton(parent));
 
         const subList = document.createElement('div');
         subList.className = 'sub-list';
-        subList.dataset.parent = parentSlug;
+        subList.dataset.parent = parent.slug;
 
-        subcategories.forEach(child => {
-          subList.appendChild(createSubcategoryButton(parentSlug, slugText(child)));
+        parent.children.forEach(child => {
+          subList.appendChild(createSubcategoryButton(parent.slug, child));
         });
 
         categoryList.appendChild(subList);
@@ -1248,10 +1351,10 @@
 
     async function loadCategories() {
       try {
-        const response = await fetch(CATEGORY_API_URL);
+        const response = await fetch(CATEGORY_API_URL, { cache: 'no-store' });
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
-        const categories = await response.json();
+        const categories = normalizeCategories(await response.json());
         buildCategoryMaps(categories);
         renderCategories(categories);
       } catch (error) {
@@ -1353,6 +1456,9 @@
       if (replaceBooks) {
         clearBooks();
         nextBooksUrl = url;
+        setEmptyState('loading');
+        emptyState.classList.add('show');
+        resultCount.textContent = 'Yüklənir...';
       }
       updateLoadMoreButton();
 
@@ -1365,11 +1471,15 @@
         const books = Array.isArray(data) ? data : (data.results || []);
         books.forEach(book => bookGrid.appendChild(createBookCard(book)));
         nextBooksUrl = Array.isArray(data) ? null : data.next;
+        setEmptyState('empty');
         render();
       } catch (error) {
         if (requestId !== booksRequestId) return;
         console.error('Kitablar yuklenmedi:', error);
-        resultCount.textContent = 'Kitablar yuklenmedi';
+        clearBooks();
+        setEmptyState('error');
+        emptyState.classList.add('show');
+        resultCount.textContent = 'Kitablar yüklənmədi';
       } finally {
         if (requestId === booksRequestId) {
           isLoadingBooks = false;
@@ -1399,10 +1509,8 @@
       let visible = 0;
       const books = getBooks();
       books.forEach(book => {
-        const price = Number(book.dataset.price);
-        const show = price >= state.minPrice && price <= state.maxPrice;
-        book.classList.toggle('d-none', !show);
-        if (show) visible++;
+        book.classList.remove('d-none');
+        visible++;
       });
       resultCount.textContent = visible + ' kitab göstərilir';
       activeFilter.innerHTML = '<i class="bi bi-funnel-fill" style="font-size:11px;"></i> ' + state.label;
@@ -1415,7 +1523,6 @@
       if (val >= state.maxPrice) val = state.maxPrice - 1;
       state.minPrice = Math.max(PRICE_MIN, val);
       syncUI();
-      render();
     });
 
     maxRange.addEventListener('input', () => {
@@ -1423,7 +1530,6 @@
       if (val <= state.minPrice) val = state.minPrice + 1;
       state.maxPrice = Math.min(PRICE_MAX, val);
       syncUI();
-      render();
     });
 
     /* ── NUMBER INPUTS ── */
@@ -1432,7 +1538,6 @@
       val = Math.max(PRICE_MIN, Math.min(val, state.maxPrice - 1));
       state.minPrice = val;
       syncUI();
-      render();
     });
 
     maxInput.addEventListener('change', () => {
@@ -1440,7 +1545,6 @@
       val = Math.min(PRICE_MAX, Math.max(val, state.minPrice + 1));
       state.maxPrice = val;
       syncUI();
-      render();
     });
 
     /* ── CATEGORY LOGIC ── */
@@ -1466,7 +1570,7 @@
       }
 
       if (pushUrl) updateBooksUrl(slug);
-      nextBooksUrl = categoryBooksUrl(slug);
+      nextBooksUrl = booksUrl(slug);
       loadBooks(nextBooksUrl, replaceBooks);
       render();
     }
@@ -1488,7 +1592,7 @@
         } else {
           btn.addEventListener('click', () => {
             if (btn.dataset.direct === 'true') {
-              selectCategory(btn.dataset.category, btn.textContent.trim());
+              selectCategory(btn.dataset.category);
               return;
             }
 
@@ -1505,14 +1609,7 @@
       });
 
       subBtns.forEach(btn => btn.addEventListener('click', () => {
-        selectCategory(btn.dataset.subcategory, btn.textContent.replace('В·', '').trim());
-        return;
-        state.category = btn.dataset.category;
-        state.subcategory = btn.dataset.subcategory;
-        state.label = btn.textContent.replace('·', '').trim();
-        catBtns.forEach(b => b.classList.toggle('active', b.dataset.category === state.category));
-        subBtns.forEach(b => b.classList.toggle('active', b === btn));
-        render();
+        selectCategory(btn.dataset.subcategory);
       }));
     }
 
@@ -1521,6 +1618,12 @@
       state.maxPrice = PRICE_MAX;
       syncUI();
       resetToAll();
+    });
+
+    priceSearchBtn.addEventListener('click', () => {
+      nextBooksUrl = booksUrl();
+      loadBooks(nextBooksUrl, true);
+      render();
     });
 
     loadMoreBtn.addEventListener('click', () => loadBooks());
