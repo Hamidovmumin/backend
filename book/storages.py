@@ -2,13 +2,12 @@ from storages.backends.s3boto3 import S3Boto3Storage
 
 class PublicMediaStorage(S3Boto3Storage):
     location = 'media/public'
-    default_acl = 'public-read'
     file_overwrite = False
+    default_acl = None  # ACL istifadə etmirik, AWS Block Public ACL ilə toqquşmur
 
 class PrivateMediaStorage(S3Boto3Storage):
     location = 'media/private'
-    default_acl = 'private'
     file_overwrite = False
     custom_domain = False
-    # Private fayllar üçün linklərin imzalanmasını təmin edir:
-    querystring_auth = True
+    default_acl = None
+    querystring_auth = True  # Müvəqqəti imzalanmış linklər yaradır
