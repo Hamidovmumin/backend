@@ -1061,9 +1061,10 @@
 
   <script>
     const PRICE_MIN = 0, PRICE_MAX = 2000;
-    const API_URL = 'http://127.0.0.1:8000/api/books/all/';
-    const CATEGORY_API_URL = 'http://127.0.0.1:8000/api/books/all-category/';
-    const CATEGORY_BOOKS_API_URL = 'http://127.0.0.1:8000/api/books/get-books-category/';
+    const API_URL = '/api/books/all/';
+    const CATEGORY_API_URL = '/api/books/all-category/';
+    const CATEGORY_BOOKS_API_URL = '/api/books/get-books-category/';
+    const API_BASE = window.NOVELORA_API_BASE || window.location.origin;
     const state = { category: 'all', subcategory: 'all', minPrice: PRICE_MIN, maxPrice: PRICE_MAX, label: 'Hamısı' };
 
     const categoryList = document.getElementById('categoryList');
@@ -1112,9 +1113,13 @@
       return state.subcategory !== 'all' ? state.subcategory : state.category;
     }
 
+    function apiUrl(path) {
+      return new URL(path, API_BASE);
+    }
+
     function booksUrl(slug = currentCategorySlug()) {
       const hasCategory = slug && slug !== 'all';
-      const url = new URL(hasCategory ? CATEGORY_BOOKS_API_URL : API_URL);
+      const url = apiUrl(hasCategory ? CATEGORY_BOOKS_API_URL : API_URL);
       if (hasCategory) url.searchParams.set('category', slug);
       url.searchParams.set('min_price', state.minPrice);
       url.searchParams.set('max_price', state.maxPrice);
@@ -1166,24 +1171,7 @@
       if (categoryBySlug[slug] && categoryBySlug[slug].name) return categoryBySlug[slug].name;
 
       const labels = {
-        'all': 'Hamısı',
-        'romanlar': 'Roman',
-        'elm-tehsil': 'Elm və Təhsil',
-        'usaq-kitablari': 'Uşaq kitabları',
-        'fantastika': 'Fantastika',
-        'sexsi-inkisaf': 'Şəxsi İnkişaf',
-        'klassik-roman': 'Klassik roman',
-        'macera': 'Macəra',
-        'sevgi': 'Sevgi',
-        'dil-oyrenme': 'Dil öyrənmə',
-        'tarix': 'Tarix',
-        'fizika': 'Fizika',
-        'riyaziyyat': 'Riyaziyyat',
-        'distopiya': 'Distopiya',
-        'kosmos': 'Kosmos',
-        'verdisler': 'Vərdişlər',
-        'biznes': 'Biznes',
-        'psixologiya': 'Psixologiya'
+        'all': 'Hamısı'
       };
 
       return labels[slug] || String(slug || '')
@@ -1223,12 +1211,14 @@
     }
 
     function isCategoryLike(item) {
-      return item && typeof item === 'object' && ('slug' in item || 'name' in item || 'children' in item);
+      return (item && typeof item === 'object' && ('slug' in item || 'name' in item || 'children' in item))
+        || typeof item === 'string'
+        || typeof item === 'number';
     }
 
     function findCategoryArray(value) {
       if (Array.isArray(value)) {
-        return value.some(isCategoryLike) ? value : null;
+        return value.length === 0 || value.some(isCategoryLike) ? value : null;
       }
       if (!value || typeof value !== 'object') return null;
 
@@ -1327,8 +1317,6 @@
         return;
       }
 
-      categoryList.appendChild(createCategoryButton(null, true));
-
       categories.forEach(parent => {
         categoryList.appendChild(createCategoryButton(parent));
 
@@ -1349,7 +1337,10 @@
 
     async function loadCategories() {
       try {
-        const response = await fetch(CATEGORY_API_URL, { cache: 'no-store' });
+        const url = apiUrl(CATEGORY_API_URL);
+        url.searchParams.set('_', Date.now());
+        console.log('Kateqoriya API URL:', url.toString());
+        const response = await fetch(url.toString(), { cache: 'no-store', credentials: 'same-origin' });
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
         const rawCategories = await response.json();
@@ -1368,11 +1359,6 @@
     function categoryKey(category) {
       const slug = slugText(category);
       if (subcategoryParentMap[slug]) return subcategoryParentMap[slug];
-      if (['fizika', 'tarix', 'dil', 'dil-oyrenme', 'riyaziyyat', 'tehsil', 'elm'].includes(slug)) return 'elm-tehsil';
-      if (['kosmos', 'fantastika', 'distopiya'].includes(slug)) return 'fantastika';
-      if (['psixologiya', 'biznes', 'verdis', 'verdisler', 'sexsi-inkisaf', 'inkisaf'].includes(slug)) return 'sexsi-inkisaf';
-      if (slug.includes('roman') || ['klassik', 'klassik-roman', 'macera', 'sevgi'].includes(slug)) return 'romanlar';
-      if (['usaq-kitablari', 'usaq', 'usaq-edebiyyati'].includes(slug)) return 'usaq-kitablari';
       return slug || 'all';
     }
 
