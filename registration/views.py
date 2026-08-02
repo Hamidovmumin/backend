@@ -33,7 +33,7 @@ from core.security import get_password_hash
 @extend_schema(auth=[],tags=['Registration'])
 class StartSessionView(APIView):
     throttle_classes = [Throttle]
-    throttle_group = 'registration'
+    throttle_group = 'registration_session'
     authentication_classes = []
     permission_classes = []
 
@@ -58,7 +58,7 @@ class StartSessionView(APIView):
 )
 class ValidateUsername(APIView):
     throttle_classes = [Throttle]
-    throttle_group = 'registration'
+    throttle_group = 'registration_validate'
     authentication_classes = [RegistrationAuthentication]
     permission_classes = [AllowAny] # IsAuthenticated
 
@@ -119,7 +119,7 @@ class ValidateUsername(APIView):
 )
 class ValidateEmail(APIView):
     throttle_classes = [Throttle]
-    throttle_group = 'registration'
+    throttle_group = 'registration_email'
     authentication_classes = [RegistrationAuthentication]
     permission_classes = [AllowAny]
 
@@ -160,7 +160,7 @@ class ValidateEmail(APIView):
 )
 class ValidateTOTP(APIView):
     throttle_classes = [Throttle]
-    throttle_group = 'registration'
+    throttle_group = 'registration_totp'
     authentication_classes = [RegistrationAuthentication]
     permission_classes = [AllowAny]
 
@@ -202,7 +202,7 @@ class ValidateTOTP(APIView):
 )
 class ConfirmTOTP(APIView):
     throttle_classes = [Throttle]
-    throttle_group = 'registration'
+    throttle_group = 'registration_confirm_totp'
     authentication_classes = [RegistrationAuthentication]
     permission_classes = [AllowAny]
 
@@ -240,7 +240,7 @@ class ConfirmTOTP(APIView):
 )
 class ValidatePassword(APIView):
     throttle_classes = [Throttle]
-    throttle_group = 'registration'
+    throttle_group = 'registration_password'
     authentication_classes = [RegistrationAuthentication]
     permission_classes = [AllowAny]
 
@@ -332,7 +332,7 @@ class CreateUser(APIView):
 )
 class SendEmailSMS(APIView):
     throttle_classes = [Throttle]
-    throttle_group = 'registration'
+    throttle_group = 'registration_sms'
     authentication_classes = [RegistrationAuthentication]
     permission_classes = [AllowAny]
 

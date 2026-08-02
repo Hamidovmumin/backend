@@ -269,10 +269,21 @@
     }
 
     .cat-btn .icon { font-size: 16px; flex-shrink: 0; }
+    .cat-btn .icon.category-star { color: var(--gold); }
     .cat-btn .chev { font-size: 12px; flex-shrink: 0; transition: transform .2s; }
     .cat-btn.open-parent .chev { transform: rotate(180deg); }
 
     .cat-btn .lbl-wrap { display: flex; align-items: center; gap: 10px; }
+
+    .category-message {
+      padding: 14px 12px;
+      border: 1px dashed var(--border);
+      border-radius: 10px;
+      color: var(--ink-muted);
+      font-size: 13px;
+      text-align: center;
+      background: var(--surface2);
+    }
 
     .sub-list { display: none; padding: 6px 0 8px 36px; gap: 2px; flex-direction: column; }
     .sub-list.open { display: flex; }
@@ -290,7 +301,11 @@
       text-align: left;
       cursor: pointer;
       transition: .15s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
+    .sub-btn .sub-arrow { color: var(--teal); font-size: 14px; flex-shrink: 0; }
     .sub-btn:hover { color: var(--ink); background: var(--surface2); }
     .sub-btn.active { color: var(--teal); background: rgba(62,207,191,.07); border-color: rgba(62,207,191,.15); }
 
@@ -746,51 +761,7 @@
 
         <div class="sidebar-scroll">
           <div id="categoryList" style="display:flex;flex-direction:column;gap:4px;">
-
-            <button class="cat-btn active" data-category="all" type="button">
-              <span class="lbl-wrap"><i class="bi bi-grid-fill icon"></i> Hamısı</span>
-              <i class="bi bi-check2-circle" style="color:var(--gold);font-size:15px;"></i>
-            </button>
-
-            <button class="cat-btn" data-category="roman" type="button" aria-expanded="false">
-              <span class="lbl-wrap"><i class="bi bi-book icon"></i> Roman</span>
-              <i class="bi bi-chevron-down chev"></i>
-            </button>
-            <div class="sub-list" data-parent="roman">
-              <button class="sub-btn" data-category="roman" data-subcategory="klassik" type="button">· Klassik roman</button>
-              <button class="sub-btn" data-category="roman" data-subcategory="macera" type="button">· Macəra</button>
-              <button class="sub-btn" data-category="roman" data-subcategory="sevgi" type="button">· Sevgi</button>
-            </div>
-
-            <button class="cat-btn" data-category="elm" type="button" aria-expanded="false">
-              <span class="lbl-wrap"><i class="bi bi-mortarboard icon"></i> Elm və Təhsil</span>
-              <i class="bi bi-chevron-down chev"></i>
-            </button>
-            <div class="sub-list" data-parent="elm">
-              <button class="sub-btn" data-category="elm" data-subcategory="fizika" type="button">· Fizika</button>
-              <button class="sub-btn" data-category="elm" data-subcategory="tarix" type="button">· Tarix</button>
-              <button class="sub-btn" data-category="elm" data-subcategory="dil" type="button">· Dil öyrənmə</button>
-            </div>
-
-            <button class="cat-btn" data-category="inkisaf" type="button" aria-expanded="false">
-              <span class="lbl-wrap"><i class="bi bi-lightbulb icon"></i> Şəxsi İnkişaf</span>
-              <i class="bi bi-chevron-down chev"></i>
-            </button>
-            <div class="sub-list" data-parent="inkisaf">
-              <button class="sub-btn" data-category="inkisaf" data-subcategory="psixologiya" type="button">· Psixologiya</button>
-              <button class="sub-btn" data-category="inkisaf" data-subcategory="biznes" type="button">· Biznes</button>
-              <button class="sub-btn" data-category="inkisaf" data-subcategory="vərdiş" type="button">· Vərdişlər</button>
-            </div>
-
-            <button class="cat-btn" data-category="fantastika" type="button" aria-expanded="false">
-              <span class="lbl-wrap"><i class="bi bi-stars icon"></i> Fantastika</span>
-              <i class="bi bi-chevron-down chev"></i>
-            </button>
-            <div class="sub-list" data-parent="fantastika">
-              <button class="sub-btn" data-category="fantastika" data-subcategory="distopiya" type="button">· Distopiya</button>
-              <button class="sub-btn" data-category="fantastika" data-subcategory="kosmos" type="button">· Kosmos</button>
-            </div>
-
+            <div class="category-message">Kateqoriyalar yüklənir...</div>
           </div>
         </div>
 
@@ -1222,16 +1193,19 @@
         .join(' ');
     }
 
-    function categoryIcon(slug) {
-      const icons = {
-        'romanlar': 'bi-book',
-        'elm-tehsil': 'bi-mortarboard',
-        'usaq-kitablari': 'bi-balloon-heart',
-        'fantastika': 'bi-stars',
-        'sexsi-inkisaf': 'bi-lightbulb'
-      };
+    function showCategoryMessage(message) {
+      categoryList.innerHTML = '';
+      const item = document.createElement('div');
+      item.className = 'category-message';
+      item.textContent = message;
+      categoryList.appendChild(item);
+      catBtns = [];
+      subBtns = [];
+      subLists = [];
+    }
 
-      return icons[slug] || 'bi-folder2-open';
+    function categoryIcon() {
+      return 'bi-star-fill';
     }
 
     function normalizeCategoryNode(category, parentSlug = null) {
@@ -1298,7 +1272,7 @@
 
       const label = document.createElement('span');
       label.className = 'lbl-wrap';
-      label.innerHTML = `<i class="bi ${isAll ? 'bi-grid-fill' : categoryIcon(slug)} icon"></i> ${isAll ? labelText(slug) : category.name}`;
+      label.innerHTML = `<i class="bi ${isAll ? 'bi-grid-fill' : categoryIcon(slug)} icon${isAll ? '' : ' category-star'}"></i> ${isAll ? labelText(slug) : category.name}`;
 
       const icon = document.createElement('i');
       icon.className = isAll
@@ -1323,12 +1297,18 @@
       button.dataset.subcategory = child.slug;
       if (child.id) button.dataset.categoryId = child.id;
       button.type = 'button';
-      button.textContent = `· ${child.name}`;
+      button.innerHTML = `<i class="bi bi-arrow-right-short sub-arrow"></i><span>${child.name}</span>`;
       return button;
     }
 
     function renderCategories(categories) {
       categoryList.innerHTML = '';
+      if (!categories.length) {
+        showCategoryMessage('Kateqoriya yoxdur');
+        resetToAll({ pushUrl: false, replaceBooks: true });
+        return;
+      }
+
       categoryList.appendChild(createCategoryButton(null, true));
 
       categories.forEach(parent => {
@@ -1359,8 +1339,8 @@
         renderCategories(categories);
       } catch (error) {
         console.error('Kateqoriyalar yuklenmedi:', error);
-        bindCategoryEvents();
-        selectCategory(getUrlCategory(), labelText(getUrlCategory()), { pushUrl: false, replaceBooks: true });
+        showCategoryMessage('Kateqoriya yoxdur');
+        resetToAll({ pushUrl: false, replaceBooks: true });
       }
     }
 

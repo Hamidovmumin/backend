@@ -50,7 +50,8 @@ class StartSessionView(APIView):
             max_attempts=settings.MAX_ATTEMPTS,
         )
 
-        serializer = Token(data)
+        serializer = Token(data=data)
+        serializer.is_valid(raise_exception=True)
         return Response(serializer.data)
 
 @extend_schema(
