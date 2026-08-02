@@ -280,7 +280,7 @@
       border: 1px dashed var(--border);
       border-radius: 10px;
       color: var(--ink-muted);
-      font-size: 13px;
+      font-size: 14px;
       text-align: center;
       background: var(--surface2);
     }
@@ -305,7 +305,7 @@
       align-items: center;
       gap: 8px;
     }
-    .sub-btn .sub-arrow { color: var(--teal); font-size: 14px; flex-shrink: 0; }
+    .sub-btn .sub-arrow { color: var(--teal); font-size: 16px; flex-shrink: 0; }
     .sub-btn:hover { color: var(--ink); background: var(--surface2); }
     .sub-btn.active { color: var(--teal); background: rgba(62,207,191,.07); border-color: rgba(62,207,191,.15); }
 
@@ -1222,19 +1222,37 @@
       };
     }
 
+    function isCategoryLike(item) {
+      return item && typeof item === 'object' && ('slug' in item || 'name' in item || 'children' in item);
+    }
+
+    function findCategoryArray(value) {
+      if (Array.isArray(value)) {
+        return value.some(isCategoryLike) ? value : null;
+      }
+      if (!value || typeof value !== 'object') return null;
+
+      const likelyKeys = ['results', 'data', 'categories', 'items', 'category'];
+      for (const key of likelyKeys) {
+        const found = findCategoryArray(value[key]);
+        if (found) return found;
+      }
+
+      for (const item of Object.values(value)) {
+        const found = findCategoryArray(item);
+        if (found) return found;
+      }
+      return null;
+    }
+
     function normalizeCategories(categories) {
-      if (categories && !Array.isArray(categories)) {
-        const nestedCategories = categories.results || categories.data || categories.categories;
-        if (Array.isArray(nestedCategories)) {
-          return normalizeCategories(nestedCategories);
-        }
+      const categoryArray = findCategoryArray(categories);
+      if (categoryArray) {
+        return categoryArray.map(category => normalizeCategoryNode(category)).filter(category => category.slug);
       }
 
-      if (Array.isArray(categories)) {
-        return categories.map(category => normalizeCategoryNode(category));
-      }
-
-      return Object.entries(categories || {}).map(([parent, children]) => {
+      const entries = Object.entries(categories || {}).filter(([, children]) => Array.isArray(children));
+      return entries.map(([parent, children]) => {
         const parentSlug = slugText(parent);
         return {
           id: null,
@@ -1334,7 +1352,10 @@
         const response = await fetch(CATEGORY_API_URL, { cache: 'no-store' });
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
-        const categories = normalizeCategories(await response.json());
+        const rawCategories = await response.json();
+        console.log('Kateqoriya API cavabi:', rawCategories);
+        const categories = normalizeCategories(rawCategories);
+        console.log('Render olunan kateqoriyalar:', categories);
         buildCategoryMaps(categories);
         renderCategories(categories);
       } catch (error) {
