@@ -58,7 +58,8 @@ INSTALLED_APPS = [
     'core.apps.CoreConfig',
     'login',
     'storages',
-    'django_filters'
+    'django_filters',
+    'cart',
 ]
 
 REST_FRAMEWORK = {

@@ -29,3 +29,6 @@ def logout_account(request: HttpRequest):
 
 def books_all_page(request: HttpRequest):
     return render(request, 'books/books_all.html')
+
+def cart_page(request: HttpRequest):
+    return render(request, 'books/cart.html')

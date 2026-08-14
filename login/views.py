@@ -34,6 +34,9 @@ from utils.masked_email import masked_email
 from rest_framework.permissions import IsAuthenticated
 from core.security import verify_password
 import time
+from crud.cart import cart_crud,cart_item_crud
+from cart.models import CartItem
+from utils.cart_transfer import merge_carts
 
 @extend_schema(auth=[],tags=['Login'])
 class StartSessionView(APIView):
@@ -297,11 +300,24 @@ class LoginFinish(APIView):
 
         user = login_session.user
         login_crud.delete(db_obj=login_session)
+        cart_id = request.COOKIES.get("cart_id")
         login(request, user)
 
-        return Response({
+        response = Response({
             "message": "Login uğurludur"
         })
+
+        if cart_id:
+            if cart_crud.get_cart_user(user=user):
+                merge_carts(user, cart_id)
+            else:
+                cart = cart_crud.get_cart_id(cart_id=cart_id)
+                if cart:
+                    cart_crud.update(db_obj=cart, user=user)
+
+            response.delete_cookie("cart_id")
+
+        return response
 
 
 

@@ -632,6 +632,37 @@
       color: #0e0e12;
       font-weight: 600;
     }
+    .add-btn:disabled {
+      cursor: wait;
+      opacity: .7;
+    }
+    .add-btn.status-success {
+      background: #198754;
+      border-color: #198754;
+      color: #fff;
+      font-weight: 700;
+    }
+    .add-btn.in-cart,
+    .add-btn.in-cart:disabled {
+      background: #198754;
+      border-color: #198754;
+      color: #fff;
+      cursor: not-allowed;
+      font-weight: 700;
+      opacity: 1;
+    }
+    .add-btn.status-warning {
+      background: #f2c94c;
+      border-color: #f2c94c;
+      color: #1a1510;
+      font-weight: 700;
+    }
+    .add-btn.status-error {
+      background: var(--coral);
+      border-color: var(--coral);
+      color: #fff;
+      font-weight: 700;
+    }
 
     /* ── EMPTY ── */
     .empty {
@@ -718,16 +749,18 @@
   <!-- TOPBAR -->
   <header class="topbar">
     <div class="topbar-inner">
-      <a class="logo-wrap" href="#">
+      <a class="logo-wrap" href="{% url 'home' %}">
         <span class="logo-mark"><i class="bi bi-book-half"></i></span>
         <div class="logo-text">
           <div class="logo-name">Novelora</div>
           <div class="logo-sub">Kitab Kataloqu</div>
         </div>
       </a>
+        <a href="{% url 'cart-page' %}">
       <button class="bag-btn" type="button">
         <i class="bi bi-bag"></i> Səbət
       </button>
+            </a>
     </div>
   </header>
 
@@ -1064,6 +1097,7 @@
     const API_URL = '/api/books/all/';
     const CATEGORY_API_URL = '/api/books/all-category/';
     const CATEGORY_BOOKS_API_URL = '/api/books/get-books-category/';
+    const CART_ADD_API_URL = '/api/cart/cart-add/';
     const API_BASE = window.NOVELORA_API_BASE || window.location.origin;
     const state = { category: 'all', subcategory: 'all', minPrice: PRICE_MIN, maxPrice: PRICE_MAX, label: 'Hamısı' };
 
@@ -1115,6 +1149,65 @@
 
     function apiUrl(path) {
       return new URL(path, API_BASE);
+    }
+
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+      return '';
+    }
+
+    function productId(book) {
+      return book && (book.id || book.product_id || book.book_id || book.pk);
+    }
+
+    async function addToCart(productIdValue, button) {
+      if (!productIdValue) {
+        alert('Mehsul ID tapilmadi.');
+        return;
+      }
+
+      const previousHtml = button.innerHTML;
+      button.classList.remove('status-success', 'status-warning', 'status-error');
+      button.disabled = true;
+      button.innerHTML = '<i class="bi bi-arrow-repeat"></i> Elave olunur...';
+
+      try {
+        const url = apiUrl(CART_ADD_API_URL);
+        url.searchParams.set('product_id', productIdValue);
+        const response = await fetch(url.toString(), {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+          }
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.message || `HTTP ${response.status}`);
+
+        const message = String(data.message || '').trim();
+        const alreadyAdded = message === 'Məhsul səbətə əlavə olunub!';
+        button.classList.add(alreadyAdded ? 'status-warning' : 'status-success');
+        button.innerHTML = alreadyAdded
+          ? `<i class="bi bi-info-circle"></i> ${message}`
+          : '<i class="bi bi-check2"></i> Sebete elave olundu';
+        setTimeout(() => {
+          button.classList.remove('status-success', 'status-warning', 'status-error');
+          button.classList.add('in-cart');
+          button.innerHTML = '<i class="bi bi-check2"></i> Məhsul səbətdə😉';
+          button.disabled = true;
+        }, 1800);
+      } catch (error) {
+        console.error('Sebete elave olunmadi:', error);
+        button.classList.add('status-error');
+        button.innerHTML = '<i class="bi bi-exclamation-circle"></i> Elave olunmadi';
+        setTimeout(() => {
+          button.classList.remove('status-success', 'status-warning', 'status-error');
+          button.innerHTML = previousHtml;
+          button.disabled = false;
+        }, 1800);
+      }
     }
 
     function booksUrl(slug = currentCategorySlug()) {
@@ -1408,7 +1501,7 @@
 
       const price = document.createElement('span');
       price.className = 'book-price';
-      price.textContent = `${book.price || '0.00'} AZN`;
+      price.textContent = `${book.price || '0.00'} ${book.currency || 'AZN'}`;
 
       const rating = document.createElement('span');
       rating.className = 'book-rating';
@@ -1420,7 +1513,18 @@
       const addBtn = document.createElement('button');
       addBtn.className = 'add-btn';
       addBtn.type = 'button';
-      addBtn.innerHTML = '<i class="bi bi-bag-plus"></i> Elave et';
+      addBtn.dataset.productId = productId(book) || '';
+      if (book.cart === true) {
+        addBtn.classList.add('in-cart');
+        addBtn.disabled = true;
+        addBtn.innerHTML = '<i class="bi bi-check2"></i> Məhsul səbətdə😉';
+      } else {
+        addBtn.innerHTML = '<i class="bi bi-bag-plus"></i> Elave et';
+        addBtn.addEventListener('click', (event) => {
+          event.stopPropagation();
+          addToCart(addBtn.dataset.productId, addBtn);
+        });
+      }
 
       body.append(title, author, footer, addBtn);
       article.append(cover, body);

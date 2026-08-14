@@ -1,0 +1,1227 @@
+<!doctype html>
+<html lang="az">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Səbət — Novelora</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f5f0e8;
+      --surface: #ffffff;
+      --surface2: #f0ebe0;
+      --border: rgba(22,18,10,.1);
+      --border-hover: rgba(22,18,10,.2);
+      --ink: #1a1510;
+      --ink-muted: rgba(22,18,10,.5);
+      --gold: #a07828;
+      --coral: #c84a38;
+      --teal: #0f7a72;
+      --serif: 'Playfair Display', Georgia, serif;
+      --sans: 'DM Sans', system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 55% 40% at 5% 0%, rgba(160,120,40,.09), transparent),
+        radial-gradient(ellipse 45% 50% at 95% 100%, rgba(15,122,114,.06), transparent);
+    }
+
+    * { position: relative; z-index: 1; }
+
+    .topbar {
+      height: 68px;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(20px);
+      background: rgba(245,240,232,.88);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .topbar-inner {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+    }
+
+    .logo-mark {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      border: 1px solid rgba(160,120,40,.35);
+      background: rgba(160,120,40,.08);
+      display: grid;
+      place-items: center;
+      color: var(--gold);
+      font-size: 18px;
+    }
+
+    .logo-name { font-family: var(--serif); font-size: 20px; font-weight: 700; color: var(--ink); }
+    .logo-sub { font-size: 11px; color: var(--ink-muted); font-weight: 500; letter-spacing: .06em; text-transform: uppercase; }
+
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+
+    .back-btn, .bag-btn {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 18px;
+      border: 1px solid var(--border-hover);
+      border-radius: 999px;
+      background: transparent;
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      transition: .18s;
+    }
+
+    .back-btn:hover, .bag-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+    .bag-count {
+      min-width: 20px;
+      height: 20px;
+      display: grid;
+      place-items: center;
+      padding: 0 6px;
+      border-radius: 999px;
+      background: var(--gold);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .breadcrumb {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px 32px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--ink-muted);
+    }
+
+    .breadcrumb a { color: var(--ink-muted); text-decoration: none; transition: color .15s; }
+    .breadcrumb a:hover { color: var(--gold); }
+    .breadcrumb i { font-size: 10px; }
+    .breadcrumb span { color: var(--ink); font-weight: 500; }
+
+    .cart-page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 36px 32px 80px;
+    }
+
+    .page-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+      padding-bottom: 28px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 32px;
+    }
+
+    .section-eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-eyebrow::before {
+      content: '';
+      display: block;
+      width: 20px;
+      height: 1px;
+      background: var(--gold);
+    }
+
+    .page-title {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -.01em;
+    }
+
+    .page-title em { color: var(--gold); font-style: italic; }
+
+    .cart-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--ink-muted);
+      font-size: 13px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .cart-grid {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 36px;
+      align-items: start;
+    }
+
+    .cart-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .cart-item {
+      display: grid;
+      grid-template-columns: 86px 1fr auto;
+      gap: 18px;
+      align-items: center;
+      padding: 18px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      animation: fadeIn .25s ease;
+    }
+
+    .item-cover {
+      width: 86px;
+      aspect-ratio: 2/3;
+      overflow: hidden;
+      border-radius: 10px;
+      background: var(--surface2);
+      box-shadow: 0 16px 30px rgba(22,18,10,.12);
+    }
+
+    .item-cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .item-pill {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      margin-bottom: 7px;
+      background: rgba(160,120,40,.1);
+      border: 1px solid rgba(160,120,40,.2);
+      border-radius: 999px;
+      color: var(--gold);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+
+    .item-title {
+      font-family: var(--serif);
+      font-size: 1.2rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 3px;
+    }
+
+    .item-author {
+      color: var(--ink-muted);
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    .item-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .qty-control {
+      display: inline-grid;
+      grid-template-columns: 34px 42px 34px;
+      height: 36px;
+      align-items: center;
+      overflow: hidden;
+      border: 1px solid var(--border-hover);
+      border-radius: 999px;
+      background: var(--surface2);
+    }
+
+    .qty-btn {
+      height: 100%;
+      border: none;
+      background: transparent;
+      color: var(--ink);
+      cursor: pointer;
+      font-size: 14px;
+      transition: .15s;
+    }
+
+    .qty-btn:hover { color: var(--gold); background: rgba(160,120,40,.08); }
+    .qty-btn:disabled {
+      cursor: not-allowed;
+      opacity: .4;
+    }
+    .qty-btn:disabled:hover {
+      color: var(--ink);
+      background: transparent;
+    }
+
+    .qty-value {
+      text-align: center;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .remove-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: none;
+      background: transparent;
+      color: var(--ink-muted);
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: .15s;
+    }
+
+    .remove-btn:hover { color: var(--coral); }
+
+    .item-price {
+      min-width: 120px;
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+    }
+
+    .line-total {
+      font-family: var(--serif);
+      color: var(--gold);
+      font-size: 1.45rem;
+      font-weight: 900;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .stock-warning {
+      width: fit-content;
+      padding: 5px 10px;
+      border: 1px solid rgba(200,74,56,.34);
+      border-radius: 999px;
+      background: rgba(200,74,56,.1);
+      color: #b3261e;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.2;
+      white-space: nowrap;
+      animation: stockPulse .9s ease-in-out infinite;
+    }
+
+    .unit-price {
+      color: var(--ink-muted);
+      font-size: 12px;
+    }
+
+    .converted-unit-price {
+      color: var(--coral);
+      font-size: 12px;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    .summary-box {
+      position: sticky;
+      top: 92px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 24px 60px rgba(22,18,10,.08);
+    }
+
+    .summary-title {
+      font-family: var(--serif);
+      font-size: 1.45rem;
+      font-weight: 800;
+      margin-bottom: 18px;
+    }
+
+    .coupon-box {
+      display: flex;
+      gap: 10px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 18px;
+    }
+
+    .coupon-box input {
+      min-width: 0;
+      flex: 1;
+      height: 42px;
+      padding: 0 13px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 13px;
+      outline: none;
+      text-transform: uppercase;
+    }
+
+    .coupon-box input:focus { border-color: var(--gold); }
+
+    .apply-btn {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border: none;
+      border-radius: 50%;
+      background: var(--ink);
+      color: #f5f0e8;
+      cursor: pointer;
+      transition: .18s;
+      flex-shrink: 0;
+    }
+
+    .apply-btn:hover { background: var(--gold); color: #fff; }
+
+    .coupon-message {
+      display: none;
+      margin: -8px 0 16px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .coupon-message.show { display: block; }
+    .coupon-message.ok { color: var(--teal); }
+    .coupon-message.bad { color: var(--coral); }
+
+    .summary-lines {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .summary-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      color: var(--ink-muted);
+      font-size: 14px;
+    }
+
+    .summary-line strong {
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .discount-val { color: var(--coral); font-weight: 700; }
+
+    .summary-total {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 18px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+      margin-top: 18px;
+    }
+
+    .total-label {
+      font-size: 11px;
+      color: var(--ink-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .total-price {
+      font-family: var(--serif);
+      color: var(--gold);
+      font-size: 2.1rem;
+      font-weight: 900;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .checkout-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 22px;
+      padding: 14px 20px;
+      border: none;
+      border-radius: 999px;
+      background: var(--ink);
+      color: #f5f0e8;
+      font-family: var(--sans);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: .18s;
+    }
+
+    .checkout-btn:hover { background: var(--gold); color: #fff; }
+    .checkout-btn:disabled { opacity: .45; cursor: not-allowed; }
+
+    .hint {
+      margin-top: 12px;
+      color: var(--ink-muted);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .toast-stack {
+      position: fixed;
+      top: 88px;
+      right: 24px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: min(340px, calc(100vw - 32px));
+      pointer-events: none;
+    }
+
+    .api-toast {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 13px 15px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      background: var(--surface);
+      box-shadow: 0 18px 40px rgba(22,18,10,.16);
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.35;
+      transform: translateX(18px);
+      opacity: 0;
+      animation: toastIn .2s ease forwards;
+      pointer-events: auto;
+    }
+
+    .api-toast.hide {
+      animation: toastOut .2s ease forwards;
+    }
+
+    .api-toast i {
+      flex: 0 0 auto;
+      margin-top: 1px;
+      font-size: 17px;
+    }
+
+    .api-toast.error {
+      border-color: rgba(200,74,56,.28);
+      background: #fff0ed;
+      color: #9d2618;
+    }
+
+    .api-toast.info {
+      border-color: rgba(160,120,40,.32);
+      background: #fff8df;
+      color: #7a570f;
+    }
+
+    .api-toast.successful {
+      border-color: rgba(15,122,114,.28);
+      background: #eaf8f5;
+      color: #0f6b64;
+    }
+
+    .empty-cart {
+      display: none;
+      padding: 46px 28px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      text-align: center;
+    }
+
+    .empty-cart.show { display: block; }
+
+    .empty-icon {
+      width: 54px;
+      height: 54px;
+      margin: 0 auto 14px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: rgba(160,120,40,.1);
+      color: var(--gold);
+      font-size: 22px;
+    }
+
+    .empty-title {
+      font-family: var(--serif);
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .empty-text {
+      max-width: 420px;
+      margin: 0 auto 20px;
+      color: var(--ink-muted);
+      font-size: 14px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes toastIn {
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes toastOut {
+      to { opacity: 0; transform: translateX(18px); }
+    }
+
+    @keyframes stockPulse {
+      0%, 100% {
+        opacity: 1;
+        box-shadow: 0 0 0 0 rgba(200,74,56,.42);
+      }
+      50% {
+        opacity: .38;
+        box-shadow: 0 0 0 7px rgba(200,74,56,0);
+      }
+    }
+
+    @media (max-width: 980px) {
+      .cart-grid { grid-template-columns: 1fr; }
+      .summary-box { position: static; }
+    }
+
+    @media (max-width: 700px) {
+      .topbar-inner, .breadcrumb, .cart-page { padding-left: 20px; padding-right: 20px; }
+      .toast-stack {
+        top: 80px;
+        right: 16px;
+      }
+      .page-head { align-items: flex-start; flex-direction: column; }
+      .cart-meta { white-space: normal; }
+      .cart-item {
+        grid-template-columns: 70px 1fr;
+        align-items: start;
+      }
+      .item-cover { width: 70px; }
+      .item-price {
+        grid-column: 1 / -1;
+        min-width: 0;
+        text-align: left;
+        padding-left: 88px;
+        align-items: flex-start;
+      }
+      .topbar-right .back-btn span { display: none; }
+    }
+
+    @media (max-width: 460px) {
+      .topbar-inner { gap: 12px; }
+      .logo-sub { display: none; }
+      .back-btn, .bag-btn { padding: 9px 12px; }
+      .cart-item { gap: 14px; padding: 14px; }
+      .item-price { padding-left: 84px; }
+      .coupon-box { flex-direction: column; }
+      .apply-btn { width: 100%; border-radius: 999px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="toast-stack" id="apiToastStack" aria-live="polite" aria-atomic="true"></div>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="logo-wrap" href="{% url 'home' %}">
+        <span class="logo-mark"><i class="bi bi-book-half"></i></span>
+        <div>
+          <div class="logo-name">Novelora</div>
+          <div class="logo-sub">Kitab Kataloqu</div>
+        </div>
+      </a>
+      <div class="topbar-right">
+        <a class="back-btn" href="{% url 'books-all' %}"><i class="bi bi-arrow-left"></i> <span>Kitaba qayıt</span></a>
+        <button class="bag-btn" type="button">
+          <i class="bi bi-bag"></i> Səbət <span class="bag-count" id="topCount">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <nav class="breadcrumb">
+    <a href="{% url 'books-all' %}">Kataloq</a>
+    <i class="bi bi-chevron-right"></i>
+    <span>Səbət</span>
+  </nav>
+
+  <main class="cart-page">
+    <div class="page-head">
+      <div>
+        <div class="section-eyebrow">Alış-veriş səbəti</div>
+        <h1 class="page-title">Sizin <em>səbətiniz</em></h1>
+      </div>
+      <div class="cart-meta">
+        <i class="bi bi-bag-check"></i>
+        <span id="cartMetaText">0 kitab seçilib</span>
+      </div>
+    </div>
+
+    <div class="cart-grid">
+      <section>
+        <div class="empty-cart" id="emptyCart">
+          <div class="empty-icon"><i class="bi bi-bag"></i></div>
+          <div class="empty-title">Səbət boşdur</div>
+          <p class="empty-text">Kitab səhifəsindən “Səbətə əlavə et” düyməsinə kliklədikdən sonra seçdiyiniz kitablar burada görünəcək.</p>
+          <a class="back-btn" href="odisseya.html" style="display:inline-flex;"><i class="bi bi-book"></i> Kitaba bax</a>
+        </div>
+        <div class="cart-list" id="cartList"></div>
+      </section>
+
+      <aside class="summary-box">
+        <h2 class="summary-title">Sifariş xülasəsi</h2>
+
+        <div class="coupon-box">
+          <input id="couponInput" type="text" placeholder="Endirim kodu">
+          <button class="apply-btn" type="button" onclick="applyCoupon()" title="Kodu tətbiq et">
+            <i class="bi bi-check2"></i>
+          </button>
+        </div>
+        <div class="coupon-message" id="couponMessage"></div>
+
+        <div class="summary-lines">
+          <div class="summary-line">
+            <span>Kitab sayı</span>
+            <strong id="summaryQty">0</strong>
+          </div>
+          <div class="summary-line">
+            <span>Məhsulların cəmi</span>
+            <strong id="summarySubtotal">0.00 AZN</strong>
+          </div>
+          <div class="summary-line">
+            <span>Kitab endirimləri</span>
+            <span class="discount-val" id="summaryBookDiscount">-0.00 AZN</span>
+          </div>
+          <div class="summary-line">
+            <span>Kupon endirimi</span>
+            <span class="discount-val" id="summaryCouponDiscount">-0.00 AZN</span>
+          </div>
+          <div class="summary-line">
+            <span>Ümumi endirim</span>
+            <span class="discount-val" id="summaryTotalDiscount">-0.00 AZN</span>
+          </div>
+        </div>
+
+        <div class="summary-total">
+          <div>
+            <div class="total-label">Ümumi cəm</div>
+            <div class="hint" style="text-align:left;margin-top:2px;">Ödənişdən əvvəl son məbləğ</div>
+          </div>
+          <div class="total-price" id="summaryTotal">0.00 AZN</div>
+        </div>
+
+        <button class="checkout-btn" id="checkoutBtn" type="button" onclick="checkout()">
+          <i class="bi bi-credit-card"></i> Sifarişi tamamla
+        </button>
+        <div class="hint">Kodlar: NOVEL10, ODYSSEY20, KITAB5</div>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    const CART_KEY = 'noveloraCart';
+    const COUPONS = {
+      NOVEL10: { type: 'percent', value: 10, label: '10% endirim' },
+      ODYSSEY20: { type: 'percent', value: 20, label: '20% endirim' },
+      KITAB5: { type: 'fixed', value: 5, label: '5 AZN endirim' }
+    };
+
+    let cart = loadCart();
+    let activeCoupon = null;
+
+    function loadCart() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+        return Array.isArray(saved) ? saved : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveCart() {
+      localStorage.setItem(CART_KEY, JSON.stringify(cart));
+    }
+
+    function money(value) {
+      return `${value.toFixed(2)} AZN`;
+    }
+
+    function cartQty() {
+      return cart.reduce((sum, item) => sum + item.qty, 0);
+    }
+
+    function calcTotals() {
+      const retail = cart.reduce((sum, item) => sum + item.oldPrice * item.qty, 0);
+      const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+      const bookDiscount = Math.max(0, retail - subtotal);
+
+      let couponDiscount = 0;
+      if (activeCoupon && subtotal > 0) {
+        if (activeCoupon.type === 'percent') couponDiscount = subtotal * activeCoupon.value / 100;
+        if (activeCoupon.type === 'fixed') couponDiscount = activeCoupon.value;
+      }
+
+      couponDiscount = Math.min(couponDiscount, subtotal);
+      const total = Math.max(0, subtotal - couponDiscount);
+
+      return {
+        retail,
+        subtotal,
+        bookDiscount,
+        couponDiscount,
+        totalDiscount: bookDiscount + couponDiscount,
+        total
+      };
+    }
+
+    function renderCart() {
+      const list = document.getElementById('cartList');
+      const empty = document.getElementById('emptyCart');
+      const qty = cartQty();
+      const totals = calcTotals();
+
+      document.getElementById('topCount').textContent = qty;
+      document.getElementById('cartMetaText').textContent = `${qty} kitab seçilib`;
+      document.getElementById('summaryQty').textContent = qty;
+      document.getElementById('summarySubtotal').textContent = money(totals.subtotal);
+      document.getElementById('summaryBookDiscount').textContent = `-${money(totals.bookDiscount)}`;
+      document.getElementById('summaryCouponDiscount').textContent = `-${money(totals.couponDiscount)}`;
+      document.getElementById('summaryTotalDiscount').textContent = `-${money(totals.totalDiscount)}`;
+      document.getElementById('summaryTotal').textContent = money(totals.total);
+      document.getElementById('checkoutBtn').disabled = cart.length === 0;
+
+      empty.classList.toggle('show', cart.length === 0);
+      list.innerHTML = cart.map(item => `
+        <article class="cart-item">
+          <div class="item-cover">
+            <img src="${item.cover}" alt="${item.title}">
+          </div>
+          <div class="item-info">
+            <div class="item-pill"><i class="bi bi-bookmark-fill"></i> ${item.genre}</div>
+            <h2 class="item-title">${item.title}</h2>
+            <div class="item-author">${item.author}</div>
+            <div class="item-controls">
+              <div class="qty-control" aria-label="Say seçimi">
+                <button class="qty-btn" type="button" onclick="changeQty('${item.id}', -1)"><i class="bi bi-dash"></i></button>
+                <div class="qty-value">${item.qty}</div>
+                <button class="qty-btn" type="button" onclick="changeQty('${item.id}', 1)"><i class="bi bi-plus"></i></button>
+              </div>
+              <button class="remove-btn" type="button" onclick="removeItem('${item.id}')">
+                <i class="bi bi-trash3"></i> Sil
+              </button>
+            </div>
+          </div>
+          <div class="item-price">
+            <div class="line-total">${money(item.price * item.qty)}</div>
+            <div class="unit-price">${money(item.price)} / ədəd</div>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    function changeQty(id, delta) {
+      const item = cart.find(book => book.id === id);
+      if (!item) return;
+
+      item.qty += delta;
+      if (item.qty <= 0) {
+        cart = cart.filter(book => book.id !== id);
+      }
+
+      saveCart();
+      renderCart();
+    }
+
+    function removeItem(id) {
+      cart = cart.filter(item => item.id !== id);
+      saveCart();
+      renderCart();
+    }
+
+    function applyCoupon() {
+      const input = document.getElementById('couponInput');
+      const message = document.getElementById('couponMessage');
+      const code = input.value.trim().toUpperCase();
+
+      message.className = 'coupon-message show';
+
+      if (!code) {
+        activeCoupon = null;
+        message.classList.add('bad');
+        message.textContent = 'Endirim kodu daxil edin.';
+        renderCart();
+        return;
+      }
+
+      if (!COUPONS[code]) {
+        activeCoupon = null;
+        message.classList.add('bad');
+        message.textContent = 'Bu endirim kodu tapılmadı.';
+        renderCart();
+        return;
+      }
+
+      activeCoupon = COUPONS[code];
+      message.classList.add('ok');
+      message.textContent = `${code} tətbiq edildi: ${activeCoupon.label}.`;
+      renderCart();
+    }
+
+    function checkout() {
+      if (!cart.length) return;
+      alert('Sifarişiniz qəbul edildi. Təşəkkür edirik!');
+      cart = [];
+      activeCoupon = null;
+      saveCart();
+      document.getElementById('couponInput').value = '';
+      document.getElementById('couponMessage').className = 'coupon-message';
+      renderCart();
+    }
+
+    const SERVER_CART_API_BASE = window.location.origin;
+    const SERVER_CART_LIST_API_URL = '/api/cart/cart-list/';
+    const SERVER_CART_INCREMENT_API_URL = '/api/cart/cart-increment/';
+    const SERVER_CART_DECREMENT_API_URL = '/api/cart/cart-decrement/';
+    const SERVER_CART_DELETE_API_URL = '/api/cart/cart-delete/';
+
+    let serverCart = [];
+    let serverCartTotal = 0;
+    let serverCartLoading = false;
+    const AZN_CURRENCY = 'AZN';
+    const exchangeRateCache = { AZN: 1 };
+
+    function serverApiUrl(path) {
+      return new URL(path, SERVER_CART_API_BASE);
+    }
+
+    function serverGetCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+      return '';
+    }
+
+    function serverEscapeHtml(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function getApiMessage(data) {
+      if (!data || Array.isArray(data) || typeof data !== 'object') return null;
+
+      for (const type of ['error', 'info', 'successful']) {
+        if (data[type]) {
+          return {
+            type,
+            text: Array.isArray(data[type]) ? data[type].join(' ') : String(data[type])
+          };
+        }
+      }
+
+      return null;
+    }
+
+    function showApiMessage(type, text) {
+      if (!text) return;
+
+      const stack = document.getElementById('apiToastStack');
+      const toast = document.createElement('div');
+      const icon = {
+        error: 'bi-exclamation-circle-fill',
+        info: 'bi-info-circle-fill',
+        successful: 'bi-check-circle-fill'
+      }[type] || 'bi-info-circle-fill';
+
+      toast.className = `api-toast ${type}`;
+      toast.innerHTML = `<i class="bi ${icon}"></i><span>${serverEscapeHtml(text)}</span>`;
+      stack.appendChild(toast);
+
+      window.setTimeout(() => {
+        toast.classList.add('hide');
+        toast.addEventListener('animationend', () => toast.remove(), { once: true });
+      }, 5000);
+    }
+
+    function normalizedCurrency(currency) {
+      return String(currency || AZN_CURRENCY).trim().toUpperCase() || AZN_CURRENCY;
+    }
+
+    function serverMoney(value, currency = AZN_CURRENCY) {
+      return `${Number(value || 0).toFixed(2)} ${currency}`;
+    }
+
+    async function loadExchangeRate(currency) {
+      const normalized = normalizedCurrency(currency);
+      if (normalized === AZN_CURRENCY) return 1;
+      if (exchangeRateCache[normalized]) return exchangeRateCache[normalized];
+      if (!['USD', 'EUR'].includes(normalized)) return null;
+
+      const response = await fetch(`https://api.frankfurter.dev/v2/rate/${normalized}/AZN`, {
+        cache: 'no-store'
+      });
+      if (!response.ok) throw new Error(`Rate HTTP ${response.status}`);
+
+      const data = await response.json();
+      const rate = Number(data.rate);
+      exchangeRateCache[normalized] = Number.isFinite(rate) && rate > 0 ? rate : null;
+      return exchangeRateCache[normalized];
+    }
+
+    async function preloadExchangeRates(items) {
+      const currencies = [...new Set(items.map(item => normalizedCurrency(item.currency)))]
+        .filter(currency => currency !== AZN_CURRENCY);
+      await Promise.all(currencies.map(currency => loadExchangeRate(currency)));
+    }
+
+    function convertedUnitPriceHtml(item) {
+      const currency = normalizedCurrency(item.currency);
+      const rate = exchangeRateCache[currency];
+      if (currency === AZN_CURRENCY || !rate) return '';
+
+      return `<div class="converted-unit-price">${serverEscapeHtml(item.price)}*${rate} AZN</div>`;
+    }
+
+    function lowStockHtml(item) {
+      const stock = Number(item.stock);
+      if (!Number.isFinite(stock) || stock > 5) return '';
+
+      return `<div class="stock-warning">satışda son ${serverEscapeHtml(stock)} ədəd</div>`;
+    }
+
+    function serverCartQty() {
+      return serverCart.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
+    }
+
+    function serverTotals() {
+      const subtotal = Number(serverCartTotal || 0);
+      let couponDiscount = 0;
+
+      if (activeCoupon && subtotal > 0) {
+        if (activeCoupon.type === 'percent') couponDiscount = subtotal * activeCoupon.value / 100;
+        if (activeCoupon.type === 'fixed') couponDiscount = activeCoupon.value;
+      }
+
+      couponDiscount = Math.min(couponDiscount, subtotal);
+
+      return {
+        subtotal,
+        couponDiscount,
+        totalDiscount: couponDiscount,
+        total: Math.max(0, subtotal - couponDiscount)
+      };
+    }
+
+    async function renderServerCart(message = '') {
+      const list = document.getElementById('cartList');
+      const empty = document.getElementById('emptyCart');
+      try {
+        await preloadExchangeRates(serverCart);
+      } catch (error) {
+        console.error('Valyuta kursu yuklenmedi:', error);
+      }
+      const qty = serverCartQty();
+      const totals = serverTotals();
+
+      document.getElementById('topCount').textContent = qty;
+      document.getElementById('cartMetaText').textContent = `${qty} kitab secilib`;
+      document.getElementById('summaryQty').textContent = qty;
+      document.getElementById('summarySubtotal').textContent = serverMoney(totals.subtotal);
+      document.getElementById('summaryBookDiscount').textContent = `-${serverMoney(0)}`;
+      document.getElementById('summaryCouponDiscount').textContent = `-${serverMoney(totals.couponDiscount)}`;
+      document.getElementById('summaryTotalDiscount').textContent = `-${serverMoney(totals.totalDiscount)}`;
+      document.getElementById('summaryTotal').textContent = serverMoney(totals.total);
+      document.getElementById('checkoutBtn').disabled = serverCart.length === 0;
+
+      empty.classList.toggle('show', !serverCartLoading && serverCart.length === 0);
+      if (message && serverCart.length === 0) {
+        empty.querySelector('.empty-title').textContent = message;
+      }
+
+      if (serverCartLoading) {
+        list.innerHTML = '<div class="empty-cart show"><div class="empty-icon"><i class="bi bi-arrow-repeat"></i></div><div class="empty-title">Sebet yuklenir...</div></div>';
+        return;
+      }
+
+      list.innerHTML = serverCart.map(item => `
+        <article class="cart-item">
+          <div class="item-cover">
+            <img src="${serverEscapeHtml(item.image)}" alt="${serverEscapeHtml(item.name)}">
+          </div>
+          <div class="item-info">
+            <h2 class="item-title">${serverEscapeHtml(item.name)}</h2>
+            <div class="item-controls">
+              <div>
+                <div class="unit-price">${serverMoney(item.price, normalizedCurrency(item.currency))} / eded</div>
+                ${convertedUnitPriceHtml(item)}
+              </div>
+              <div class="qty-control" aria-label="Say secimi">
+                <button class="qty-btn" type="button" onclick="decrementItem('${item.id}')" ${Number(item.quantity || 0) <= 1 ? 'disabled' : ''}><i class="bi bi-dash"></i></button>
+                <div class="qty-value">${serverEscapeHtml(item.quantity)}</div>
+                <button class="qty-btn" type="button" onclick="incrementItem('${item.id}')"><i class="bi bi-plus"></i></button>
+              </div>
+              <button class="remove-btn" type="button" onclick="deleteItem('${item.id}')">
+                <i class="bi bi-trash3"></i> Sil
+              </button>
+            </div>
+          </div>
+          <div class="item-price">
+            ${lowStockHtml(item)}
+            <div class="line-total">${serverMoney(item.item_total)}</div>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    async function loadServerCart() {
+      serverCartLoading = true;
+      renderServerCart();
+
+      try {
+        const response = await fetch(serverApiUrl(SERVER_CART_LIST_API_URL).toString(), {
+          cache: 'no-store',
+          credentials: 'same-origin'
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const data = await response.json();
+        serverCart = Array.isArray(data.items) ? data.items : [];
+        serverCartTotal = Number(data.cart_total || 0);
+      } catch (error) {
+        console.error('Sebet yuklenmedi:', error);
+        serverCart = [];
+        serverCartTotal = 0;
+        renderServerCart('Sebet yuklenmedi');
+      } finally {
+        serverCartLoading = false;
+        renderServerCart();
+      }
+    }
+
+    async function serverCartAction(path, productId, method = 'POST') {
+      const url = serverApiUrl(path);
+      url.searchParams.set('product_id', productId);
+
+      const response = await fetch(url.toString(), {
+        method,
+        credentials: 'same-origin',
+        headers: {
+          'X-CSRFToken': serverGetCookie('csrftoken')
+        }
+      });
+      const data = await response.json().catch(() => ({}));
+      const apiMessage = getApiMessage(data);
+      if (!response.ok) {
+        if (apiMessage) showApiMessage(apiMessage.type, apiMessage.text);
+        const error = new Error(apiMessage?.text || `HTTP ${response.status}`);
+        error.apiMessageShown = Boolean(apiMessage);
+        throw error;
+      }
+      if (apiMessage) showApiMessage(apiMessage.type, apiMessage.text);
+      await loadServerCart();
+    }
+
+    async function incrementItem(id) {
+      try {
+        await serverCartAction(SERVER_CART_INCREMENT_API_URL, id);
+      } catch (error) {
+        console.error('Say artirilmadi:', error);
+        if (!error.apiMessageShown) showApiMessage('error', error.message || 'Mehsul sayi artirilmadi.');
+      }
+    }
+
+    async function decrementItem(id) {
+      try {
+        await serverCartAction(SERVER_CART_DECREMENT_API_URL, id);
+      } catch (error) {
+        console.error('Say azaldilmadi:', error);
+        if (!error.apiMessageShown) showApiMessage('error', error.message || 'Mehsul sayi azaldilmadi.');
+      }
+    }
+
+    async function deleteItem(id) {
+      try {
+        await serverCartAction(SERVER_CART_DELETE_API_URL, id, 'DELETE');
+      } catch (error) {
+        console.error('Mehsul silinmedi:', error);
+        if (!error.apiMessageShown) showApiMessage('error', error.message || 'Mehsul sebetden silinmedi.');
+      }
+    }
+
+    renderCart = renderServerCart;
+    checkout = function () {
+      if (!serverCart.length) return;
+      alert('Sifarisiniz qebul edildi. Tesekkur edirik!');
+    };
+
+    loadServerCart();
+  </script>
+</body>
+</html>
