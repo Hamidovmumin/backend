@@ -3,6 +3,11 @@ from cart.models import CartItem
 from utils.services import get_exchange_rate
 from decimal import Decimal, ROUND_HALF_UP
 
+discounts = {
+    5:5,
+    7:10,
+    10:15
+}
 
 class AddCartSerializer(serializers.Serializer):
     product_id = serializers.IntegerField(required=True)
@@ -11,6 +16,7 @@ class AddCartSerializer(serializers.Serializer):
 class ListCartItemSerializer(serializers.ListSerializer):
 
     def to_representation(self, data):
+        total_discount = 0
         items = super().to_representation(data)
 
         cart_total = sum(
@@ -18,9 +24,28 @@ class ListCartItemSerializer(serializers.ListSerializer):
             for item in items
         )
 
+        total_product = sum(
+            item["quantity"]
+            for item in items
+        )
+
+        if total_product >4:
+            discount = 0
+            if total_product >= 5 and total_product < 7:
+                discount = discounts[5]
+            if total_product >= 7 and total_product < 10:
+                discount = discounts[7]
+            if total_product >= 10:
+                discount = discounts[10]
+
+            total_discount = cart_total*(Decimal(str(discount)) / Decimal('100'))
+
         return {
             "items": items,
-            "cart_total": cart_total,
+            "cart_total":cart_total,
+            "final_total": cart_total-total_discount if total_discount !=0 else cart_total,
+            "product_discount": 0 if total_product < 5 else total_discount,
+            "total_products": total_product,
         }
 
 

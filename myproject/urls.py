@@ -21,7 +21,7 @@ from django.conf import settings
 from django.shortcuts import redirect
 
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
-from django.views.generic import TemplateView
+from security.security_views import SecurityLogoutView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -34,6 +34,7 @@ urlpatterns = [
     path('api/accounts/', include('accounts.api_urls')),
     path('api/books/', include('book.urls')),
     path('api/cart/', include('cart.urls')),
+    path("security/logout/<str:token>/",SecurityLogoutView.as_view(),name="security-logout"),
 
 
     # drf_spectacular URL-ləri

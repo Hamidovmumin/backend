@@ -10,5 +10,11 @@ class CRUDRegistration(CRUDSession[Users]):
         except self.model.DoesNotExist:
             return None
 
+    def get_by_id(self, user_id:int)->Optional[Users]:
+        try:
+            return self.model.objects.get(id=user_id)
+        except self.model.DoesNotExist:
+            return None
+
 
 user_crud = CRUDRegistration(Users)

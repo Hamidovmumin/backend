@@ -37,6 +37,9 @@ import time
 from crud.cart import cart_crud,cart_item_crud
 from cart.models import CartItem
 from utils.cart_transfer import merge_carts
+from security.utils import create_login_alert_token
+from utils.tasks import send_login_security_email
+from django.urls import reverse
 
 @extend_schema(auth=[],tags=['Login'])
 class StartSessionView(APIView):
@@ -302,6 +305,29 @@ class LoginFinish(APIView):
         login_crud.delete(db_obj=login_session)
         cart_id = request.COOKIES.get("cart_id")
         login(request, user)
+
+        session_key = request.session.session_key
+        if not session_key:
+            request.session.save()
+            session_key = request.session.session_key
+
+        logout_token = create_login_alert_token(
+            user_id=user.id,
+            session_key=session_key,
+        )
+
+        logout_url = request.build_absolute_uri(
+            reverse(
+                'security-logout',
+                kwargs={'token': logout_token}
+            )
+        )
+
+        send_login_security_email.delay(
+            user_id=user.id,
+            logout_url=logout_url,
+        )
+
 
         response = Response({
             "message": "Login uğurludur"

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="az">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Yeni giriş</title>
+</head>
+
+<body>
+
+    <h2>Hesabınıza yeni giriş edildi</h2>
+
+    <p>
+        Salam {{ user.first_name }},
+    </p>
+
+    <p>
+        Hesabınıza yeni giriş edildi.
+    </p>
+
+    <p>
+        Əgər bu siz deyilsinizsə, hesabdan çıxmaq üçün
+        aşağıdakı düyməyə basın.
+    </p>
+
+    <a
+        href="{{ logout_url }}"
+        style="
+            display:inline-block;
+            padding:12px 20px;
+            background:#dc3545;
+            color:white;
+            text-decoration:none;
+            border-radius:6px;
+        "
+    >
+        Hesabdan çıx
+    </a>
+
+</body>
+
+</html>
