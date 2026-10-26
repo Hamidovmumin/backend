@@ -16,9 +16,10 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
           script: |
-            cd /home/ubuntu/backend
-            source /home/ubuntu/env/bin/activate
-            git pull
+            cd /home/ubuntu/projects/backend
+            git pull origin main
+            source venv/bin/activate
             pip install -r requirements.txt
             python manage.py migrate
+            python manage.py collectstatic --noinput
             sudo systemctl restart gunicorn
